@@ -1,0 +1,105 @@
+<header>
+  <p class="text-white font-medium bg-gradient-to-r from-[#1e3a8a] to-[#14b8a6] p-2">
+    Owners Management
+  </p>
+</header>
+
+<div class="pl-4 flex space-x-4">
+  <button mat-fab routerLink="/home" style="background-color: whitesmoke; color: #2c3e8f;">
+    <mat-icon>arrow_back</mat-icon>
+  </button>
+  <h3 style="font-size: x-large;"> New Owner Profile</h3>
+</div>
+
+<form [formGroup]="userForm" class=" max-w-lg p-6 mx-auto bg-white shadow-lg rounded-lg">
+  <mat-form-field appearance="outline" class="w-1/2 mb-4">
+      <mat-label>Account#</mat-label>
+      <input matInput maxlength="4" formControlName="account">
+      <mat-error *ngIf="userForm.controls['account'].invalid && (isFormSubmitted || userForm.controls['account'].touched || userForm.controls['account'].dirty)"> Required, must be 4 digits, and contain only numbers.
+      </mat-error>
+  </mat-form-field>
+       
+  <mat-form-field appearance="outline" class="w-full mb-4">
+      <mat-label>Owner</mat-label>
+      <input matInput formControlName="owner">
+      <mat-error *ngIf="userForm.controls['owner'].invalid && (isFormSubmitted || userForm.controls['owner'].touched || userForm.controls['owner'].dirty)"> This is required
+      </mat-error>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="w-full">
+    <mat-label>Contact Name</mat-label>
+    <input matInput formControlName="name">
+    <mat-error *ngIf="userForm.controls['name'].invalid && (isFormSubmitted || userForm.controls['name'].touched || userForm.controls['name'].dirty)"> This is required
+    </mat-error>
+  </mat-form-field>
+      
+   
+  <mat-form-field appearance="outline" class="w-full">
+    <mat-label>Email</mat-label>
+    <input type="email" matInput formControlName="email">
+    <mat-error *ngIf="userForm.controls['email'].invalid && (isFormSubmitted || userForm.controls['email'].touched || userForm.controls['email'].dirty)"> Valid email is required
+    </mat-error>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="w-full">
+    <mat-label>Phone:</mat-label>
+    <input matInput type="tel" maxlength="10" formControlName="phone">
+    <mat-error *ngIf="userForm.controls['phone'].invalid && (isFormSubmitted || userForm.controls['phone'].touched || userForm.controls['phone'].dirty)"> Required, must be 10 digits, and contain only numbers.
+    </mat-error>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="example-full-width">
+      <mat-label>Address</mat-label>
+      <textarea matInput formControlName="address"></textarea>
+      <mat-error *ngIf="userForm.controls['address'].invalid && (isFormSubmitted || userForm.controls['address'].touched || userForm.controls['address'].dirty)"> This is required
+      </mat-error>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="example-full-width">
+    <mat-label>City</mat-label> 
+    <input matInput formControlName="city">
+    <mat-error *ngIf="userForm.controls['city'].invalid && (isFormSubmitted || userForm.controls['city'].touched || userForm.controls['city'].dirty)"> This is required
+    </mat-error>
+  
+  </mat-form-field>
+  <mat-form-field appearance="outline" class="">
+    <mat-label>State</mat-label>
+    <input matInput type="text" maxlength="2" formControlName="state">
+    <mat-error *ngIf="userForm.controls['state'].invalid && (isFormSubmitted || userForm.controls['state'].touched || userForm.controls['state'].dirty)"> This is required
+    </mat-error>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="ml-10">
+    <mat-label>Postal Code</mat-label>
+    <input matInput maxlength="5" formControlName="postal">
+    <mat-error *ngIf="userForm.controls['postal'].invalid && (isFormSubmitted || userForm.controls['postal'].touched || userForm.controls['postal'].dirty)"> Required, must be 5 digits, and contain only numbers.
+    </mat-error>
+    
+  </mat-form-field>
+  <div class="flex justify-start space-x-5">
+    
+    <button *ngIf="isViewMode" 
+    mat-flat-button 
+    color="primary" 
+    (click)="changeViewtoEdit()">
+    Edit Owner
+    </button>
+
+    <button *ngIf="isEditMode" 
+    mat-flat-button 
+    type="submit" 
+    color="primary" 
+    (click)="onSubmit()">
+    Update Owner
+    </button>
+
+    <button *ngIf="!isEditMode && !isViewMode" 
+    mat-flat-button 
+    type="submit" 
+    color="primary" 
+    (click)="onSubmit()">
+    Add Owner
+    </button>
+    <button mat-flat-button  type="reset" routerLink="/home" color="primary">Cancel</button>
+  </div> 
+</form>

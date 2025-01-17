@@ -1,0 +1,28 @@
+  <aside class="flex  w-full flex-col">
+    <!-- Sidebar Header -->
+    <mat-toolbar class="flex flex-col items-center space-y-4 p-4">
+      <figure>
+        <img class="w-10 h-10 object-fill" src="assets/management.png" alt="Admin">
+        <figcaption class="black">Welcome Admin!</figcaption>
+      </figure>
+    </mat-toolbar>
+  
+    <!-- Sidebar Content -->
+    <mat-sidenav class="bg-[#0b588c] text-white p-4 h-[640px] rounded-tr-lg rounded-br-lg" mode="side" opened>
+      <div class="space-y-4">
+        <a [routerLink]="['/home']" class=" text-gray-100 hover:bg-blue-400 rounded">Owners</a>
+        <hr class="border-t border-white p-2">
+        
+        <a [routerLink]="['/home']" class=" text-gray-100 hover:bg-blue-400 rounded">Profile</a>
+        <hr class="border-t border-white p-2">
+
+        <a [routerLink]="['/home']" class=" text-gray-100 hover:bg-blue-400 rounded">Settings</a>
+        <hr class="border-t border-white p-2">
+      </div>
+    </mat-sidenav>
+  
+    <mat-toolbar class="flex justify-end p-4 rounded-br-lg rounded-tr-lg">
+    <button mat-raised-button [routerLink]="['/login']" color="warn">Log Out</button>
+    </mat-toolbar>
+  </aside>
+  

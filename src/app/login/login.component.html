@@ -1,0 +1,38 @@
+<header>
+    <p class="text-white font-medium bg-gradient-to-r from-[#1e3a8a] to-[#14b8a6] p-2">
+      Owners Management
+    </p>
+</header>
+<main class="bg-gray-100">
+    <div class="flex space-x-6 ">
+    <!-- First Aside Section -->
+        <section class= "bg-white p-10 mx-20 flex flex-col items-center space-y-4" style="flex-basis: 65%">
+            <figure>
+                <img class="object-cover object-center rounded-full items-center mx-auto flex" alt="login" width="300" height="250" src="assets/login.jpg">
+            </figure>
+            
+            <h2 class="mb-4 text-center text-gray-900">Sign-In</h2>
+            <mat-form-field appearance="outline" class="w-full">
+            <input matInput type="password" [(ngModel)]="pin" #pinField="ngModel" name="pin" required maxlength="4" placeholder="Enter a 4-digit Pin*">
+            <!-- Display error if Pin is empty -->
+            <mat-error *ngIf="pinField.invalid && pinField.touched">{{ errorMessage }}</mat-error>
+
+            </mat-form-field>
+            
+            <button mat-flat-button color="primary"
+            class="w-full  py-2 px-3 rounded" 
+            [disabled]="isButtonDisabled"
+            (click)="onSubmit(pinField)">Submit
+            </button>
+            
+        </section>
+        <!-- Second Aside Section -->
+        <app-new-user></app-new-user>
+        <hr>
+    </div>
+</main>  
+<!-- Footer -->
+<app-footer></app-footer>
+  
+
+  

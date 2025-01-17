@@ -1,0 +1,99 @@
+<section>
+  <h1 style="font-size: x-large;">Maintain Owners</h1>
+  <div> 
+    <div class="w-full flex justify-between">
+      <mat-form-field appearance="outline">
+          <input matInput (keyup)="applyFilter($event)" placeholder="Search" #input>
+      </mat-form-field>
+      <button mat-flat-button [routerLink]="['/new-owner']" color="primary">Add New Owner</button>
+    </div>
+      
+    <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+      
+      <tr mat-header-row *matHeaderRowDef="displayedColumns" class="border-b-4 border-gray-300"></tr>
+      <!-- Table Rows -->
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="odd:bg-gray-200 even:bg-white hover:bg-blue-200"></tr>
+  
+      <!-- No Data Row (when no data available) -->
+      <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell text-center text-gray-700 py-4 text-lg font-semibold" colspan="10">No data found!</td>
+      </tr>
+      
+  <!-- Account ID Column -->
+      <ng-container matColumnDef="accountId">
+        <th mat-header-cell *matHeaderCellDef class="px-6 py-3 text-gray-700 text-lg font-semibold"> Account ID </th>
+        <td mat-cell *matCellDef="let element"> {{element.accountId}} </td>
+      </ng-container>
+
+      <!-- Owner Name Column -->
+      <ng-container matColumnDef="ownerName">
+        <th mat-header-cell *matHeaderCellDef class="px-6 py-3 text-gray-700 text-lg font-semibold"> Owner Name </th>
+        <td mat-cell *matCellDef="let element"> {{element.ownerName}} </td>
+      </ng-container>
+
+      <!-- Contact Name Column -->
+      <ng-container matColumnDef="contactName">
+        <th mat-header-cell *matHeaderCellDef class="px-6 py-3 text-gray-700 text-lg font-semibold"> Contact Name </th>
+        <td mat-cell *matCellDef="let element"> {{element.contactName}} </td>
+      </ng-container>
+
+      <!-- Email Column -->
+      <ng-container matColumnDef="email">
+        <th mat-header-cell *matHeaderCellDef class="px-6 py-3 text-gray-700 text-lg font-semibold">Email Address</th>
+        <td mat-cell *matCellDef="let element" >{{element.email}}</td>
+      </ng-container>
+
+      <!-- Phone Column -->
+      <ng-container matColumnDef="phone">
+        <th mat-header-cell *matHeaderCellDef class="px-6 py-3 text-gray-700 text-lg font-semibold"> Phone </th>
+        <td mat-cell *matCellDef="let element"> {{element.phone}} </td>
+      </ng-container>
+
+      <!-- Address Column -->
+      <ng-container matColumnDef="address">
+        <th mat-header-cell *matHeaderCellDef class="px-6 py-3 text-gray-700 text-lg font-semibold w-40"> Address </th>
+        <td mat-cell *matCellDef="let element"> {{element.address}} </td>
+      </ng-container>
+
+      <!-- City Column -->
+      <ng-container matColumnDef="city" >
+        <th mat-header-cell *matHeaderCellDef class="px-6 py-3 text-gray-700 text-lg font-semibold"> City </th>
+        <td mat-cell *matCellDef="let element"> {{element.city}} </td>
+      </ng-container>
+
+      <!-- State Column -->
+      <ng-container matColumnDef="state">
+        <th mat-header-cell *matHeaderCellDef class="px-6 py-3text-gray-700 text-lg font-semibold"> State </th>
+        <td mat-cell *matCellDef="let element"> {{element.state}} </td>
+      </ng-container>
+
+      <!-- Zip Column -->
+      <ng-container matColumnDef="zip">
+        <th mat-header-cell *matHeaderCellDef class="px-6 py-3 text-gray-700 text-lg font-semibold"> Zip </th>
+        <td mat-cell *matCellDef="let element"> {{element.zip}} </td>
+      </ng-container>
+
+      <!-- Star Column -->
+      <ng-container matColumnDef="star" stickyEnd>
+        <th mat-header-cell *matHeaderCellDef aria-label="row actions">&nbsp;</th>
+        <td mat-cell *matCellDef="let element">
+          <app-menu
+          [ownerData]="element" 
+        (deleteOwner)="onDelete($event)" 
+        (editOwner)="onEdit($event)"
+        (viewOwner)="onView($event)">
+        </app-menu>
+        </td> 
+      </ng-container>
+    
+      <!-- Row shown when there is no matching data. -->
+      <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell" colspan="4">No data found!</td>
+      </tr>
+    </table>
+      <hr>
+      <mat-paginator class="mat-elevation-z8" [pageSizeOptions]="[5, 10]" [pageSize]="pageSize" [length]="totalItems"
+      aria-label="Select page">
+      </mat-paginator>
+  </div>
+</section>
