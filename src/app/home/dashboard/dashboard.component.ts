@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -7,7 +7,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MenuComponent } from "./menu/menu.component";
 import { Router, RouterLink } from '@angular/router';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
-import { SqliteService } from '../../sqlite.service';
+import { OwnerDataService } from '../../dataservice/owners.service';
 import { Owner } from '../../model/owner';
 
 @Component({
@@ -33,28 +33,16 @@ export class DashboardComponent implements OnInit {
  
   
   constructor(
-    private sqliteService: SqliteService, 
+    private ownerDataService: OwnerDataService, 
     private router: Router) {}
   
   ngOnInit() {
     this.loadOwners();
-    //only activate when there's no table 
-    // this.isTableCreated ? this.loadOwners() : this.createTable();
   }
-
-  // only activate when theres no table. 
-  // async createTable() {
-  //   try {
-  //     await this.sqliteService.createTable(); 
-  //     this.loadOwners(); 
-  //   } catch (error) {
-  //     console.error('Error creating table', error);
-  //   }
-  // }
 
   async loadOwners() {
     try {
-      const owners: Owner[] = await this.sqliteService.getAllData();
+      const owners: Owner[] = await this.ownerDataService.getAllOwnersData();
       this.dataSource.data = owners;
       this.totalItems = owners.length;
       // Set the data in the table
@@ -76,7 +64,7 @@ export class DashboardComponent implements OnInit {
    
   async onDelete(id: number) {
     try {
-      await this.sqliteService.deleteData(id);
+      await this.ownerDataService.deleteOwnersData(id);
       this.loadOwners(); 
       alert('Owner data deleted successfully!');
     } catch (error: any)  {

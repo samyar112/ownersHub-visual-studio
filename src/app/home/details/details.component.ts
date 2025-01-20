@@ -6,7 +6,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router'; 
 import { MatIcon } from '@angular/material/icon';
-import { SqliteService } from '../../sqlite.service'; 
+import { OwnerDataService } from '../../dataservice/owners.service';
 import { Owner } from '../../model/owner';
 import { MatSnackBar } from '@angular/material/snack-bar'
 
@@ -27,7 +27,7 @@ export class DetailsComponent implements OnInit {
   originalAccountId!: Number;
 
   constructor(
-    private sqliteService: SqliteService, 
+    private ownerDataService: OwnerDataService, 
     private route: ActivatedRoute,
     private router: Router,
     private snackBar: MatSnackBar
@@ -82,7 +82,7 @@ export class DetailsComponent implements OnInit {
   fetchData(): void {
     // If ownerId exists, fetch the owner data
     if (this.ownerId) {
-      this.sqliteService.getDataById(this.ownerId).then((ownerData: Owner) => {
+      this.ownerDataService.getOwnersDataById(this.ownerId).then((ownerData: Owner) => {
         this.originalAccountId = ownerData.accountId;
         // Populate the form for either 'edit' or 'view' mode
         this.isEditMode ? this.populateForm(ownerData) : this.viewOwnerData(ownerData);
@@ -112,7 +112,7 @@ export class DetailsComponent implements OnInit {
 
   private async checkAccountID(accountId: number) { 
     try {
-      const existingOwner = await this.sqliteService.getAccountId(accountId);
+      const existingOwner = await this.ownerDataService.getOwnersAccountId(accountId);
       return !!existingOwner;
 
     } catch (error) {
@@ -180,7 +180,7 @@ export class DetailsComponent implements OnInit {
         });
         return;  
       }
-      await this.sqliteService.addData(ownerData);  
+      await this.ownerDataService.addOwnersData(ownerData);  
       this.router.navigate(['/home']);
       this.snackBar.open('Owner data added successfully!', 'Close', {
         duration: 3000
@@ -196,7 +196,7 @@ export class DetailsComponent implements OnInit {
   // Update existing owner in the database
   private async updateOwnerData(ownerData: Owner) {
     try {
-      await this.sqliteService.editData(ownerData);  
+      await this.ownerDataService.editOwnersData(ownerData);  
       this.router.navigate(['/home']);
       this.snackBar.open('Owner data updated successfully!', 'Close', {
         duration: 3000

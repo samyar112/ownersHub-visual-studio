@@ -7,8 +7,4 @@
     <!-- Folder where production build objects will be placed -->
     <BuildOutputFolder>$(MSBuildProjectDirectory)\dist\ownersHub-demo\browser\</BuildOutputFolder>
   </PropertyGroup>
-  <ItemGroup>
-    <Folder Include="src\electron\" />
-    <Folder Include="src\sqlite-database\" />
-  </ItemGroup>
 </Project>
