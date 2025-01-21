@@ -1,10 +1,48 @@
-  <header>
-    <p class="text-white font-medium bg-gradient-to-r from-[#1e3a8a] to-[#14b8a6] p-2">
-      Owners Management
-    </p>
-  </header>
-    <main class="max-w-full flex flex-row space-x-10 mt-2 mb-10 mr-10">
-          <app-side-nav class="w-64"></app-side-nav>
-          <app-dashboard class="flex-1 p-4"></app-dashboard>
-    </main>
-    
+<header class="flex w-full justify-between bg-gradient-to-r from-[#1e3a8a] to-[#14b8a6] pl-2 pt-1 font-medium text-white">
+  <p> Owners Management</p>
+  <figure class="flex flex-row space-x-2 p-2">
+    <img class="h-6 w-6 object-fill" src="assets/management.png" alt="Admin">
+    <figcaption>
+      Welcome Admin!
+    </figcaption>
+  </figure>
+</header>
+
+<mat-sidenav-container class="mb-10 mr-10 mt-2 flex w-full flex-row">
+  <mat-sidenav class="flex flex-col" mode="side" #sidenav [style.width]="'14rem'" opened>
+
+    <div *ngIf="sidenav.opened" class="space-y-4 rounded-br-lg rounded-tr-lg bg-[#0b588c] p-4">
+      <a [routerLink]="['/home']" class="group flex transform items-center space-x-2 rounded p-2 text-gray-100 transition-transform duration-200 hover:bg-blue-400 hover:scale-110">
+        <mat-icon class="group-hover:scale-125 transition-transform duration-200">home</mat-icon>
+        <span>Dashboard</span>
+      </a>
+      <hr class="border-t border-white p-2">
+
+      <a [routerLink]="['/home']" class="group flex transform items-center space-x-2 rounded p-2 text-gray-100 transition-transform duration-200 hover:bg-blue-400 hover:scale-110">
+        <mat-icon class="group-hover:scale-125 transition-transform duration-200">account_circle</mat-icon>
+        <span>Profile</span>
+      </a>
+      <hr class="border-t border-white p-2">
+
+      <a [routerLink]="['/home']" class="group flex transform items-center space-x-2 rounded p-2 text-gray-100 transition-transform duration-200 hover:bg-blue-400 hover:scale-110">
+        <mat-icon class="group-hover:scale-125 transition-transform duration-200">settings</mat-icon>
+        <span>Settings</span>
+      </a>
+      <hr class="border-t border-white p-2">
+    </div>
+
+    <mat-toolbar class="flex justify-end rounded-br-lg rounded-tr-lg p-4">
+      <button mat-raised-button [routerLink]="['/login']" color="warn"> <mat-icon>exit_to_app</mat-icon>Log Out</button>
+    </mat-toolbar>
+  </mat-sidenav>
+
+  <mat-sidenav-content class="flex-1 pl-4 pr-4">
+    <div class="flex flex-row">
+      <button mat-icon-button (click)="sidenav.toggle()">
+        <mat-icon>{{ sidenav.opened ? 'list' : 'menu' }}</mat-icon>
+      </button>
+      <h1 style="font-size: x-large;" class="flex items-center justify-center">Maintain Owners</h1>
+    </div>
+    <app-dashboard></app-dashboard>
+  </mat-sidenav-content>
+</mat-sidenav-container>

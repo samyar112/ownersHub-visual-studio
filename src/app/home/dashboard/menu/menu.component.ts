@@ -16,7 +16,8 @@ export class MenuComponent {
   @Input() ownerData!: Owner; 
   @Output() deleteOwner: EventEmitter<number> = new EventEmitter<number>();  
   @Output() editOwner: EventEmitter<Owner> = new EventEmitter<Owner>();  
-  @Output() viewOwner: EventEmitter<Owner> = new EventEmitter<Owner>();  
+  @Output() viewOwner: EventEmitter<Owner> = new EventEmitter<Owner>();
+  @Output() viewFiles: EventEmitter<Owner> = new EventEmitter<Owner>();
 
   constructor() {}
 
@@ -34,6 +35,6 @@ export class MenuComponent {
   }
 
   onViewFiles() {
-    
+    this.viewFiles.emit(this.ownerData);
   }
 }

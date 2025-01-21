@@ -12,8 +12,8 @@ process.on('uncaughtException', (error) => {
 // Create window and load the app
 function createWindow() {
   const win = new BrowserWindow({
-    width: 1400,
-    height: 950,
+    width: 1450,
+    height: 1000,
     resizable: true,
     minWidth: 800,
     minHeight: 800,

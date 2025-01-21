@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, inject, ViewChild } from '@angular/core';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -9,6 +9,8 @@ import { Router, RouterLink } from '@angular/router';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { OwnerDataService } from '../../dataservice/owners.service';
 import { Owner } from '../../model/owner';
+import { MatDialog } from '@angular/material/dialog';
+import { DialogBoxComponent } from '../../utility/dialog-box/dialog-box.component';
 
 @Component({
   selector: 'app-dashboard',
@@ -26,6 +28,7 @@ export class DashboardComponent implements OnInit {
   displayedColumns: string[] = ['accountId', 'ownerName', 'contactName', 'email', 'phone', 'address', 'city', 'state', 'zip', 'star'];
   dataSource: MatTableDataSource<Owner> = new MatTableDataSource<Owner>();
   isTableCreated: boolean = false;
+  readonly dialog = inject(MatDialog);
   
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   pageSize = 10;
@@ -61,16 +64,30 @@ export class DashboardComponent implements OnInit {
     this.router.navigate(['/new-owner', ownerData.id], { 
       queryParams: { mode: 'edit' } });
   }
+
+  onViewFiles(ownerData: Owner) {
+    this.router.navigate(['/view-files', ownerData.id]);
+  }
    
   async onDelete(id: number) {
-    try {
-      await this.ownerDataService.deleteOwnersData(id);
-      this.loadOwners(); 
-      alert('Owner data deleted successfully!');
-    } catch (error: any)  {
-      console.error('Error deleting data:', error);
-      alert('Error deleting owner data. Please try again.');
-    };
+    const dialogRef = this.dialog.open(DialogBoxComponent, {
+      data: {
+        title: 'Confirm Deletion?',
+        content: 'Please confirm if you want to proceed with delete action.',
+        closeButtonText: 'Close',
+        confirmButtonText: 'Confirm',
+      },
+      disableClose: true
+    });
+
+    dialogRef.componentInstance.confirm.subscribe(async () => {
+      try {
+        await this.ownerDataService.deleteOwnersData(id);
+        this.loadOwners(); 
+      } catch (error: any) {
+        alert('Error deleting owner data. Please try again.');
+      }
+    });
   }
 
   applyFilter(event: Event) {
@@ -78,3 +95,4 @@ export class DashboardComponent implements OnInit {
     this.dataSource.filter = filterValue.trim().toLowerCase();
   }
 }
+
