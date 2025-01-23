@@ -17,6 +17,7 @@ function createWindow() {
     resizable: true,
     minWidth: 800,
     minHeight: 800,
+    icon: 'public/assets/owner.png',
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
@@ -26,7 +27,7 @@ function createWindow() {
 
   win.loadFile('dist/owners-hub-demo/browser/index.html');
   // Open DevTools automatically
-  win.webContents.openDevTools();
+  //win.webContents.openDevTools();
 }
 
 app.whenReady().then(() => {

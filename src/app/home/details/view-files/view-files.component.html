@@ -1,55 +1,139 @@
-<header>
+﻿<header>
   <p class="bg-gradient-to-r from-[#1e3a8a] to-[#14b8a6] p-2 font-medium text-white">
     Owners Management
   </p>
 </header>
 
-<div class="flex space-x-4 pl-4">
+<div class="p-2">
   <button mat-fab routerLink="/home" style="background-color: whitesmoke; color: #2c3e8f;">
     <mat-icon>arrow_back</mat-icon>
   </button>
-  <h3 style="font-size: x-large;"> View Files</h3>
 </div>
-<mat-card class="p-4">
-  <h2 class="mb-4 text-xl font-semibold">Owner Data</h2>
+<mat-card style="border: 2px solid #1e3a8a; " class="mat-elevation-z8 mb-10 ml-4 mr-4 rounded">
+  <div class="flex items-center justify-between p-4">
+    <h1 style="font-size: x-large;">View Files</h1>
+    <button mat-flat-button [routerLink]="['/file-upload']" color="primary">
+    <mat-icon>file_upload</mat-icon>
+    Upload</button>
+  </div>
+
+  <hr class="border-t to-white pb-2">
   <mat-card-content>
-    <div class="flex flex-wrap space-x-4">
-      <div class="flex items-center">
-        <span class="font-medium">Account ID:</span>
+    <div class="flex justify-evenly">
+      <div class="flex flex-col items-center">
+        <span class="font-bold">Account ID:</span>
         <span class="ml-2">{{accountId}}</span>
       </div>
-      <div class="flex items-center">
-        <span class="font-medium">Owner Name:</span>
-        <span class="ml-2">"accountId"</span>
+      <div class="flex flex-col items-center">
+        <span class="font-bold">Owner Name:</span>
+        <span class="ml-2">{{ownerName}}</span>
       </div>
-      <div class="flex items-center">
-        <span class="font-medium">Contact Name:</span>
-        <span class="ml-2">"accountId"</span>
+      <div class="flex flex-col items-center">
+        <span class="font-bold">Contact Name:</span>
+        <span class="ml-2">{{contactName}}</span>
       </div>
-      <div class="flex items-center">
-        <span class="font-medium">Email:</span>
-        <span class="ml-2">"accountId"</span>
+      <div class="flex flex-col items-center">
+        <span class="font-bold">Email:</span>
+        <span class="ml-2">{{email}}</span>
       </div>
-      <div class="flex items-center">
-        <span class="font-medium">Phone:</span>
-        <span class="ml-2">"accountId"</span>
+      <div class="flex flex-col items-center">
+        <span class="font-bold">Phone:</span>
+        <span class="ml-2">{{phone}}</span>
       </div>
-      <div class="flex items-center">
-        <span class="font-medium">Address:</span>
-        <span class="ml-2">"accountId"</span>
+      <div class="flex flex-col items-center">
+        <span class="font-bold">Address:</span>
+        <span class="ml-2">{{address}}</span>
       </div>
-      <div class="flex items-center">
-        <span class="font-medium">City:</span>
-        <span class="ml-2">"accountId"</span>
+      <div class="flex flex-col items-center">
+        <span class="font-bold">City:</span>
+        <span class="ml-2">{{city}}</span>
       </div>
-      <div class="flex items-center">
-        <span class="font-medium">State:</span>
-        <span class="ml-2">"accountId"</span>
+      <div class="flex flex-col items-center">
+        <span class="font-bold">State:</span>
+        <span class="ml-2">{{state}}</span>
       </div>
-      <div class="flex items-center">
-        <span class="font-medium">Postal:</span>
-        <span class="ml-2">"accountId"</span>
+      <div class="flex flex-col items-center">
+        <span class="font-bold">Postal:</span>
+        <span class="ml-2">{{postal}}</span>
       </div>
     </div>
   </mat-card-content>
+  <hr class="border-t to-white pb-2 pt-4">
+  <div class="flex items-center justify-between p-4">
+    <!--TODO: Download the file-->
+    <button mat-flat-button color="primary"><mat-icon>file_download</mat-icon>Download as Zip</button>
+  </div>
 </mat-card>
+
+<section>
+  <div class="ml-4 mr-4">
+    <table mat-table [dataSource]="dataSource" class=" mat-elevation-z8 table-auto rounded">
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns" class="border-b-4 m-2 border-gray-300"></tr>
+      <!-- Table Rows -->
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="selection.toggle(row)" class="odd:bg-gray-200 even:bg-white hover:bg-blue-200"></tr>
+
+
+      <!-- No Data Row (when no data available) -->
+      <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell py-4 text-center text-lg font-semibold text-gray-700" colspan="10">No files found!</td>
+      </tr>
+      <tr matColumnDef="select">
+        <th mat-header-cell *matHeaderCellDef>
+          <mat-checkbox (change)="$event ? toggleAllRows() : null"
+                        [checked]="selection.hasValue() && isAllSelected()"
+                        [indeterminate]="selection.hasValue() && !isAllSelected()">
+          </mat-checkbox>
+        </th>
+        <td mat-cell *matCellDef="let row">
+          <mat-checkbox (change)="$event ? selection.toggle(row) : null"
+                        [checked]="selection.isSelected(row)">
+
+          </mat-checkbox>
+        </td>
+      </tr>
+      <!-- Account ID Column -->
+      <tr matColumnDef="fileName">
+        <th mat-header-cell *matHeaderCellDef class="px-6 py-3 text-lg font-semibold text-gray-700"> File Name </th>
+        <td mat-cell *matCellDef="let element" (click)="$event.stopPropagation()"> {{element.accountId}} </td>
+      </tr>
+      'fileName', 'fileSize', 'dateCreated', 'star'
+      <!-- Owner Name Column -->
+      <tr matColumnDef="fileSize">
+        <th mat-header-cell *matHeaderCellDef class="px-6 py-3 text-lg font-semibold text-gray-700"> File Size </th>
+        <td mat-cell *matCellDef="let element" (click)="$event.stopPropagation()"> {{element.ownerName}} </td>
+      </tr>
+
+      <!-- Contact Name Column -->
+      <tr matColumnDef="dateCreated">
+        <th mat-header-cell *matHeaderCellDef class="px-6 py-3 text-lg font-semibold text-gray-700"> Date  </th>
+        <td mat-cell *matCellDef="let element" (click)="$event.stopPropagation()"> {{element.contactName}} </td>
+      </tr>
+
+      <!-- Star Column -->
+      <tr matColumnDef="star" stickyEnd>
+        <th mat-header-cell *matHeaderCellDef aria-label="row actions">&nbsp;</th>
+        <td mat-cell *matCellDef="let element" (click)="$event.stopPropagation()">
+          <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+          <mat-menu #menu="matMenu">
+            <button mat-menu-item>
+              <mat-icon>file_download</mat-icon>
+              <span>Download</span>
+            </button>
+            <button mat-menu-item style="color: red;" >
+              <mat-icon>delete</mat-icon>
+              <span>Delete</span>
+            </button>
+          </mat-menu>
+        </td>
+      </tr>
+    </table>
+    <hr>
+    <mat-paginator class="mat-elevation-z8" [pageSizeOptions]="[5, 10]" [pageSize]="pageSize" [length]="totalItems"
+                   aria-label="Select page">
+    </mat-paginator>
+
+  </div>
+</section>

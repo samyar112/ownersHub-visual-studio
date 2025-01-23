@@ -27,14 +27,12 @@ export class DashboardComponent implements OnInit {
   
   displayedColumns: string[] = ['accountId', 'ownerName', 'contactName', 'email', 'phone', 'address', 'city', 'state', 'zip', 'star'];
   dataSource: MatTableDataSource<Owner> = new MatTableDataSource<Owner>();
-  isTableCreated: boolean = false;
   readonly dialog = inject(MatDialog);
   
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   pageSize = 10;
   totalItems = 0;
  
-  
   constructor(
     private ownerDataService: OwnerDataService, 
     private router: Router) {}
