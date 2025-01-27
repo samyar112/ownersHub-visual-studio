@@ -2,11 +2,12 @@ const { ipcMain } = require('electron');
 const { app, BrowserWindow } = require('electron');
 const path = require('node:path');
 const { registerIPCHandlers } = require('./sqlite3.database/ownersService');
+const { registerFilesIPCHandlers } = require('./sqlite3.database/fileService');
 
 
 // Error Handling
 process.on('uncaughtException', (error) => {
-  alert("Error Loading, Close the application", error)
+  console.error("Error Loading, Close the application", error)
 });
 
 // Create window and load the app
@@ -27,12 +28,13 @@ function createWindow() {
 
   win.loadFile('dist/owners-hub-demo/browser/index.html');
   // Open DevTools automatically
-  //win.webContents.openDevTools();
+  win.webContents.openDevTools();
 }
 
 app.whenReady().then(() => {
   createWindow();
   registerIPCHandlers();
+  registerFilesIPCHandlers();
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {

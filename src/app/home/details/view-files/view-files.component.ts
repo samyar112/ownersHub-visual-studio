@@ -1,6 +1,8 @@
 import { Component, OnInit, inject, ViewChild } from '@angular/core';
 import { OwnerDataService } from '../../../dataservice/owners.service';
+import { FilesDataService } from '../../../dataservice/files.service';
 import { Owner } from '../../../model/owner';
+import { Files } from '../../../model/files';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -15,6 +17,7 @@ import { SelectionModel } from '@angular/cdk/collections';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogBoxComponent } from '../../../utility/dialog-box/dialog-box.component';
+import { FileUploadCardComponent } from '../../../utility/file-upload-card/file-upload-card.component';
 
 @Component({
   selector: 'app-view-files',
@@ -25,9 +28,9 @@ import { DialogBoxComponent } from '../../../utility/dialog-box/dialog-box.compo
   //changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ViewFilesComponent implements OnInit {
-  displayedColumns: string[] = ['select','fileName', 'fileSize', 'dateCreated', 'star'];
-  dataSource: MatTableDataSource<Owner> = new MatTableDataSource<Owner>();
-  selection = new SelectionModel<Owner>(true, []);
+  displayedColumns: string[] = ['select','fileName','fileExtension', 'fileSize', 'dateUploaded', 'star'];
+  dataSource: MatTableDataSource<Files> = new MatTableDataSource<Files>();
+  selection = new SelectionModel<Files>(true, []);
   readonly dialog = inject(MatDialog);
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -35,7 +38,7 @@ export class ViewFilesComponent implements OnInit {
   totalItems = 0;
 
   ownerId?: any;
-  accountId?: number;
+  accountId!: number;
   ownerName?: string;
   contactName?: string;
   email?: string;
@@ -45,8 +48,19 @@ export class ViewFilesComponent implements OnInit {
   state?: string;
   postal?: number;
 
+
+  file!: Blob;
+  fileId!: any;
+  fileName?: string; 
+  fileSize?: string;
+  fileExtension?: string;
+  dateUploaded?: string;
+
+
+
   constructor(
     private ownerDataService: OwnerDataService,
+    private filesDataService: FilesDataService,
     private route: ActivatedRoute,
     private router: Router
   ) { }
@@ -54,7 +68,6 @@ export class ViewFilesComponent implements OnInit {
   ngOnInit(): void {
     this.ownerId = +this.route.snapshot.paramMap.get('id')!;
     this.fetchData();
-    this.loadOwners();
   }
   isAllSelected() {
     const numSelected = this.selection.selected.length;
@@ -85,11 +98,22 @@ export class ViewFilesComponent implements OnInit {
       this.postal = ownerData.zip
   }
 
-  async loadOwners() {
-    try {
-      const owners: Owner[] = await this.ownerDataService.getAllOwnersData();
-      this.dataSource.data = owners;
-      this.totalItems = owners.length;
+  async fetchData(): Promise<void> {
+    await this.ownerDataService.getOwnersDataById(this.ownerId).then((ownerData: Owner) => {
+      this.populateCard(ownerData);
+      this.loadFilesofOwner();
+    }).catch((error: any) => {
+      console.error('Error fetching owner data:', error);
+    });
+  }
+
+  async loadFilesofOwner() {
+     try {
+       const files: Files[] = await this.filesDataService.getFilesByAccountId(this.accountId);
+       this.dataSource.data = files;
+       this.fileId = files.map(file => file.id)
+       console.log(files);
+      this.totalItems = files.length;
       // Set the data in the table
       this.dataSource.paginator = this.paginator;
     } catch (error) {
@@ -97,16 +121,40 @@ export class ViewFilesComponent implements OnInit {
     }
   }
 
-  async fetchData(): Promise<void> {
+ 
+  onUpload() {
+    const dialogRef = this.dialog.open(FileUploadCardComponent, {
+      disableClose: true
+    });
     
-      await this.ownerDataService.getOwnersDataById(this.ownerId).then((ownerData: Owner) => {
-        this.populateCard(ownerData)
-      }).catch((error: any) => {
-        console.error('Error fetching owner data:', error);
+    const componentInstance = dialogRef.componentInstance as FileUploadCardComponent;
+
+    // Listen for the file data emitted by the child component
+    if (componentInstance) {
+      componentInstance.fileSelected.subscribe(async (fileData: any) => {
+        const uploadedFile = fileData.file;
+        const allData = {
+          file: uploadedFile,
+          accountId: this.accountId,
+          fileName: fileData.fileName,
+          fileExtension: fileData.fileExtension,
+          fileSize: fileData.fileSize,
+          dateUploaded: fileData.dateUploaded
+        }
+        await this.filesDataService.addFilesData(allData);
+        this.loadFilesofOwner();
+
       });
+    } else {
+      console.error("Dialog component instance is not available.");
+    }
   }
 
-  async onDelete(id: number) {
+  onDownload() {
+    //TODO
+  }
+
+  async onDelete() {
     const dialogRef = this.dialog.open(DialogBoxComponent, {
       data: {
         title: 'Confirm Deletion?',
@@ -119,16 +167,11 @@ export class ViewFilesComponent implements OnInit {
 
     dialogRef.componentInstance.confirm.subscribe(async () => {
       try {
-        await this.ownerDataService.deleteOwnersData(id);
-        this.loadOwners();
+        await this.filesDataService.deleteFilesData(this.fileId);
       } catch (error: any) {
         alert('Error deleting owner data. Please try again.');
       }
     });
-  }
-
-  onDownload() {
-    //TODO
   }
 
   applyFilter(event: Event) {

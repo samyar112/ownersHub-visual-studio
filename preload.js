@@ -8,5 +8,11 @@ contextBridge.exposeInMainWorld('electron', {
   deleteOwnersData: (id) => ipcRenderer.invoke('deleteOwnersData', id),
   getAllOwnersData: () => ipcRenderer.invoke('getAllOwnersData'),
   getOwnersDataById: (id) => ipcRenderer.invoke('getOwnersDataById', id),
-  getOwnersAccountId: (accountId) => ipcRenderer.invoke('getOwnersAccountId', accountId)
+  getOwnersAccountId: (accountId) => ipcRenderer.invoke('getOwnersAccountId', accountId),
+
+  //Files Table
+  addFilesData: (data) => ipcRenderer.invoke('addFilesData', data),
+  deleteFilesDataa: (id) => ipcRenderer.invoke('deleteFilesData', id),
+  getFilesByAccountId: (accountId) => ipcRenderer.invoke('getFilesByAccountId', accountId)
+
 });

@@ -9,7 +9,4 @@ export interface Owner {
   city?: string;
   state?: string;
   zip?: number;
-  fileName?: string;
-  fileSize?: string;
-  dateCreated?: string;
 }
