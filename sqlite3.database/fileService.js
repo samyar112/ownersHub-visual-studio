@@ -91,10 +91,34 @@ function handleDownloadFilesData() {
         if (err) {
           reject('Error downloading data: ' + err.message);
         } else if (row) {
-          // Ensure you're sending back the proper file data
           resolve({
             id: row.id,
-            file: row.file,  // Ensure this is the correct data type (Buffer or Blob)
+            file: row.file,
+            fileName: row.fileName
+          });
+        } else {
+          reject('No file found with that ID');
+        }
+        db.close();
+      });
+    });
+  });
+}
+
+function handleDownloadSelectedFiles() {
+  ipcMain.handle('downloadSelectedFiles', async (event, selectedIds) => {
+    const db = getDb();
+    // Use a parameterized query to fetch multiple files based on the selected IDs
+    const downloadQuery = `SELECT id, file, fileName FROM files WHERE id IN (${selectedIds.join(',')})`;
+
+    return new Promise((resolve, reject) => {
+      db.all(downloadQuery, [], (err, rows) => {
+        if (err) {
+          reject('Error downloading data: ' + err.message);
+        } else if (row) {
+          resolve({
+            id: row.id,
+            file: row.file,
             fileName: row.fileName
           });
         } else {
@@ -112,6 +136,7 @@ function registerFilesIPCHandlers() {
   handleDeleteFilesData();
   handleGetFilesByAccountId();
   handleDownloadFilesData();
+  handleDownloadSelectedFiles();
 }
 
 module.exports = { registerFilesIPCHandlers };

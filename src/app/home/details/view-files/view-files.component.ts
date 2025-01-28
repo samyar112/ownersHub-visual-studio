@@ -18,14 +18,14 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogBoxComponent } from '../../../utility/dialog-box/dialog-box.component';
 import { FileUploadCardComponent } from '../../../utility/file-upload-card/file-upload-card.component';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-view-files',
   standalone: true,
-  imports: [RouterLink, MatCardModule, MatIconModule, CommonModule, MatButtonModule, MatTableModule, MatPaginator, MatPaginatorModule, MatFormFieldModule, MatInputModule, MatCheckboxModule, MatMenuModule],
+  imports: [RouterLink, MatCardModule, MatIconModule, CommonModule, MatButtonModule, MatTableModule, MatPaginator, MatPaginatorModule, MatFormFieldModule, MatInputModule, MatCheckboxModule, MatMenuModule, MatProgressSpinnerModule ],
   templateUrl: './view-files.component.html',
   styleUrl: './view-files.component.css',
-  //changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ViewFilesComponent implements OnInit {
   displayedColumns: string[] = ['select','fileName','fileExtension', 'fileSize', 'dateUploaded', 'star'];
@@ -57,6 +57,7 @@ export class ViewFilesComponent implements OnInit {
   fileSize?: string;
   fileExtension?: string;
   dateUploaded?: string;
+  isUploading: boolean = false;
 
 
 
@@ -148,8 +149,15 @@ export class ViewFilesComponent implements OnInit {
        
           // Send the file as a Blob to Electron via IPC
           allData.file = binaryData;  // Update the file data to send the Blob
-          await this.filesDataService.addFilesData(allData);
-          this.loadFilesofOwner();
+          this.isUploading = true
+          try {
+            await this.filesDataService.addFilesData(allData);
+            this.isUploading = false;
+            this.loadFilesofOwner();
+          } catch (error) {
+            this.isUploading = false
+            console.error('Upload Failed:', error);
+          }
         };
 
         //// Read the file as ArrayBuffer
@@ -162,6 +170,7 @@ export class ViewFilesComponent implements OnInit {
 
   async onDownload(id: number) {
     try {
+
       const fileData: Files = await this.filesDataService.downloadFilesData(id);
 
       if (!fileData || !fileData.file) {

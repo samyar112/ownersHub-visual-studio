@@ -24,4 +24,8 @@ export class FilesDataService {
     return (window as any).electron.downloadFilesData(id);
   }
 
+  downloadSelectedFiles(selectedIds: number) {
+    return (window as any).electron.downloadSelectedFiles(selectedIds);
+  }
+
 }

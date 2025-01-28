@@ -30,7 +30,7 @@ export class FileUploadCardComponent {
 
   }
   // Main function to handle file selection
-  onFileSelected(fileData: Files, event: any): void {
+  onFileSelected( event: any): void {
     const selectedFile = event.target.files[0];
     const maxSizeInBytes = 5 * 1024 * 1024;
 
