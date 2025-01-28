@@ -13,10 +13,15 @@ export class FilesDataService {
   }
 
   deleteFilesData(id: number) {
-    return (window as any).electron.deleteFilesDataa(id);
+    return (window as any).electron.deleteFilesData(id);
   }
 
   getFilesByAccountId(accountId: number) {
     return (window as any).electron.getFilesByAccountId(accountId);
   }
+
+  downloadFilesData(id: number) {
+    return (window as any).electron.downloadFilesData(id);
+  }
+
 }

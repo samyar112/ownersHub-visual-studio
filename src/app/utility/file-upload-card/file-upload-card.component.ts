@@ -1,4 +1,4 @@
-import { Component, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { MatDialogClose } from '@angular/material/dialog';
 import { MatDialogContent } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
@@ -6,6 +6,7 @@ import { MatCardModule,  } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { Files } from '../../model/files';
 
 @Component({
   selector: 'app-file-upload-card',
@@ -17,7 +18,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 export class FileUploadCardComponent {
   @Output() fileSelected = new EventEmitter<any>();
 
-  file: Blob | null = null;
+  file: File | null = null;
   fileName: string = '';
   fileSize: string = '';
   fileExtension: string = '';
@@ -29,7 +30,7 @@ export class FileUploadCardComponent {
 
   }
   // Main function to handle file selection
-  onFileSelected(event: any): void {
+  onFileSelected(fileData: Files, event: any): void {
     const selectedFile = event.target.files[0];
     const maxSizeInBytes = 5 * 1024 * 1024;
 

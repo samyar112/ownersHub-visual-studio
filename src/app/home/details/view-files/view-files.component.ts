@@ -51,7 +51,7 @@ export class ViewFilesComponent implements OnInit {
   postal?: number;
 
 
-  file!: Blob;
+  file: File | null = null;
   fileId!: any;
   fileName?: string; 
   fileSize?: string;
@@ -122,7 +122,6 @@ export class ViewFilesComponent implements OnInit {
     }
   }
 
- 
   onUpload() {
     const dialogRef = this.dialog.open(FileUploadCardComponent, {
       disableClose: true
@@ -141,18 +140,45 @@ export class ViewFilesComponent implements OnInit {
           fileExtension: fileData.fileExtension,
           fileSize: fileData.fileSize,
           dateUploaded: fileData.dateUploaded
-        }
-        await this.filesDataService.addFilesData(allData);
-        this.loadFilesofOwner();
+        };
+        // Convert file to ArrayBuffer (binary format) before sending to Electron
+        const fileReader = new FileReader();
+        fileReader.onload = async () => {
+          const binaryData = fileReader.result as ArrayBuffer;
+       
+          // Send the file as a Blob to Electron via IPC
+          allData.file = binaryData;  // Update the file data to send the Blob
+          await this.filesDataService.addFilesData(allData);
+          this.loadFilesofOwner();
+        };
 
+        //// Read the file as ArrayBuffer
+        fileReader.readAsArrayBuffer(uploadedFile);
       });
     } else {
       console.error("Dialog component instance is not available.");
     }
   }
 
-  onDownload() {
-    //TODO
+  async onDownload(id: number) {
+    try {
+      const fileData: Files = await this.filesDataService.downloadFilesData(id);
+
+      if (!fileData || !fileData.file) {
+        throw new Error('File data is empty or not found.');
+      }
+      const blob = new Blob([fileData.file], { type: 'application/octet-stream' });
+
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob!);
+        link.download = fileData.fileName!;
+        link.click();
+
+        // Optionally, revoke the object URL after download to release memory
+        URL.revokeObjectURL(link.href);
+    } catch (error: any) {
+        console.error('Error downloading file:', error);
+    }
   }
 
   async onDelete(id: number) {
@@ -175,8 +201,6 @@ export class ViewFilesComponent implements OnInit {
       }
     });
   }
-
-  
 
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;

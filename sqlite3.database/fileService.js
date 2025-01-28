@@ -11,9 +11,17 @@ function handleAddFilesData() {
   `;
 
     return new Promise((resolve, reject) => {
+
+      let fileBuffer;
+      if (data.file instanceof ArrayBuffer) {
+        fileBuffer = Buffer.from(data.file); // Convert ArrayBuffer to Buffer
+      } else {
+        reject("File data is not in a valid format.");
+        return;
+      }
       db.run(insertQuery, [
         data.accountId,
-        data.file,
+        fileBuffer,
         data.fileName,
         data.fileExtension,
         data.fileSize,
@@ -73,11 +81,37 @@ function handleDeleteFilesData() {
   });
 }
 
+function handleDownloadFilesData() {
+  ipcMain.handle('downloadFilesData', async (event, id) => {
+    const db = getDb();
+    const downloadQuery = `SELECT id, file, fileName FROM files WHERE id = ?`;
+
+    return new Promise((resolve, reject) => {
+      db.get(downloadQuery, [id], (err, row) => {
+        if (err) {
+          reject('Error downloading data: ' + err.message);
+        } else if (row) {
+          // Ensure you're sending back the proper file data
+          resolve({
+            id: row.id,
+            file: row.file,  // Ensure this is the correct data type (Buffer or Blob)
+            fileName: row.fileName
+          });
+        } else {
+          reject('No file found with that ID');
+        }
+        db.close();
+      });
+    });
+  });
+}
+
 
 function registerFilesIPCHandlers() {
   handleAddFilesData();
   handleDeleteFilesData();
   handleGetFilesByAccountId();
+  handleDownloadFilesData();
 }
 
 module.exports = { registerFilesIPCHandlers };

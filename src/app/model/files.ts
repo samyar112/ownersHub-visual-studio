@@ -1,7 +1,7 @@
 export interface Files {
   id?: any;
   accountId?: number;
-  file?: Blob;
+  file?: File;
   fileName?: string;
   fileExtension?: string;
   fileSize?: string;
