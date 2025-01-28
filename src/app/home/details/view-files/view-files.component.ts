@@ -33,6 +33,8 @@ export class ViewFilesComponent implements OnInit {
   selection = new SelectionModel<Files>(true, []);
   readonly dialog = inject(MatDialog);
 
+  filesArray: Files[] = [];
+
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   pageSize = 5;
   totalItems = 0;
@@ -109,11 +111,10 @@ export class ViewFilesComponent implements OnInit {
 
   async loadFilesofOwner() {
      try {
-       const files: Files[] = await this.filesDataService.getFilesByAccountId(this.accountId);
-       this.dataSource.data = files;
-       this.fileId = files.map(file => file.id)
-       console.log(files);
-      this.totalItems = files.length;
+      this.filesArray = await this.filesDataService.getFilesByAccountId(this.accountId);
+
+      this.dataSource.data = this.filesArray;
+      this.totalItems = this.filesArray.length;
       // Set the data in the table
       this.dataSource.paginator = this.paginator;
     } catch (error) {
@@ -154,7 +155,7 @@ export class ViewFilesComponent implements OnInit {
     //TODO
   }
 
-  async onDelete() {
+  async onDelete(id: number) {
     const dialogRef = this.dialog.open(DialogBoxComponent, {
       data: {
         title: 'Confirm Deletion?',
@@ -167,12 +168,15 @@ export class ViewFilesComponent implements OnInit {
 
     dialogRef.componentInstance.confirm.subscribe(async () => {
       try {
-        await this.filesDataService.deleteFilesData(this.fileId);
+        await this.filesDataService.deleteFilesData(id);
+        this.loadFilesofOwner();
       } catch (error: any) {
         alert('Error deleting owner data. Please try again.');
       }
     });
   }
+
+  
 
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
