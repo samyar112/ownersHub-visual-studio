@@ -6,6 +6,8 @@
     <ShouldRunBuildScript>false</ShouldRunBuildScript>
     <!-- Folder where production build objects will be placed -->
     <BuildOutputFolder>$(MSBuildProjectDirectory)\dist\ownersHub-demo\browser\</BuildOutputFolder>
+    <BuildCommand>
+    </BuildCommand>
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="src\app\utility\file-upload-card\" />

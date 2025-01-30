@@ -3,7 +3,7 @@ import { OwnerDataService } from '../../../dataservice/owners.service';
 import { FilesDataService } from '../../../dataservice/files.service';
 import { Owner } from '../../../model/owner';
 import { Files } from '../../../model/files';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
@@ -50,35 +50,25 @@ export class ViewFilesComponent implements OnInit {
   state?: string;
   postal?: number;
 
-
-  file: File | null = null;
-  fileId!: any;
-  fileName?: string; 
-  fileSize?: string;
-  fileExtension?: string;
-  dateUploaded?: string;
   isUploading: boolean = false;
-
-
 
   constructor(
     private ownerDataService: OwnerDataService,
     private filesDataService: FilesDataService,
-    private route: ActivatedRoute,
-    private router: Router
+    private route: ActivatedRoute
   ) { }
 
   ngOnInit(): void {
     this.ownerId = +this.route.snapshot.paramMap.get('id')!;
     this.fetchData();
   }
+
   isAllSelected() {
     const numSelected = this.selection.selected.length;
     const numRows = this.dataSource.data.length;
     return numSelected === numRows;
   }
 
-  /** Selects all rows if they are not all selected; otherwise clear selection. */
   toggleAllRows() {
     if (this.isAllSelected()) {
       this.selection.clear();
@@ -88,8 +78,15 @@ export class ViewFilesComponent implements OnInit {
     this.selection.select(...this.dataSource.data);
   }
 
+  /** Selects all rows if they are not all selected; otherwise clear selection. */
+  checkboxLabel(row?: Files): string {
+    if (!row) {
+      return `${this.isAllSelected() ? 'deselect' : 'select'} all`;
+    }
+    return `${this.selection.isSelected(row) ? 'deselect' : 'select'} row ${row.id + 1}`;
+  }
+
   populateCard(ownerData: Owner) {
-    console.log(ownerData);
       this.accountId = ownerData.accountId,
       this.ownerName = ownerData.ownerName,
       this.contactName = ownerData.contactName,
@@ -168,28 +165,6 @@ export class ViewFilesComponent implements OnInit {
     }
   }
 
-  async onDownload(id: number) {
-    try {
-
-      const fileData: Files = await this.filesDataService.downloadFilesData(id);
-
-      if (!fileData || !fileData.file) {
-        throw new Error('File data is empty or not found.');
-      }
-      const blob = new Blob([fileData.file], { type: 'application/octet-stream' });
-
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob!);
-        link.download = fileData.fileName!;
-        link.click();
-
-        // Optionally, revoke the object URL after download to release memory
-        URL.revokeObjectURL(link.href);
-    } catch (error: any) {
-        console.error('Error downloading file:', error);
-    }
-  }
-
   async onDelete(id: number) {
     const dialogRef = this.dialog.open(DialogBoxComponent, {
       data: {
@@ -209,6 +184,45 @@ export class ViewFilesComponent implements OnInit {
         alert('Error deleting owner data. Please try again.');
       }
     });
+  }
+
+  async onDownload(id: number) {
+    try { 
+      const fileData = await this.filesDataService.downloadFilesData(id);
+      this.downloadHelper(fileData.file, 'application/octet-stream', fileData.fileName,)
+    } catch (error: any) {
+      console.error('Error downloading file:', error);
+    }
+  }
+
+  async onDownloadAsZip() {
+    const selectedIds = this.selection.selected.map(row => row.id);
+    if (selectedIds.length > 0) {
+      try {
+        const fileData = await this.filesDataService.downloadSelectedFiles(selectedIds);
+        console.log('fileReceived:', fileData)
+        this.downloadHelper(fileData, 'application/zip', 'selected_files.zip')
+      } catch (error: any) {
+        console.error('Error downloading ZIP file:', error);
+      }
+    }
+  }
+
+  //Helper method to download files and zip
+  downloadHelper(blobData: File, type: string, fileName?: string,) {
+
+    if (!blobData) {
+      throw new Error('File data is empty or not found.');
+    }
+
+    const blob = new Blob([blobData], { type: type });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = fileName!;
+    link.click();
+
+    //Revoke the object URL to release memory
+    URL.revokeObjectURL(link.href);
   }
 
   applyFilter(event: Event) {

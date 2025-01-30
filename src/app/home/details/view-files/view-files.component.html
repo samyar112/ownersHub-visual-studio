@@ -61,7 +61,8 @@
   <hr class="border-t to-white pb-2 pt-4">
   <div class="flex items-center justify-between p-4">
     <!--TODO: Download the file-->
-    <button mat-flat-button color="primary" [disabled]><mat-icon>file_download</mat-icon>Download as Zip</button>
+    <button mat-flat-button color="primary" (click)="onDownloadAsZip()">
+            <mat-icon>file_download</mat-icon>Download as Zip</button>
   </div>
 </mat-card>
 
@@ -83,15 +84,18 @@
       </tr>
       <tr matColumnDef="select">
         <th mat-header-cell *matHeaderCellDef>
-          <mat-checkbox (change)="$event ? toggleAllRows() : null"
+          <mat-checkbox color="primary" 
+                        (change)="$event ? toggleAllRows() : null"
                         [checked]="selection.hasValue() && isAllSelected()"
                         [indeterminate]="selection.hasValue() && !isAllSelected()">
           </mat-checkbox>
         </th>
         <td mat-cell *matCellDef="let row">
-          <mat-checkbox (change)="$event ? selection.toggle(row) : null"
-                        [checked]="selection.isSelected(row)">
-
+          <mat-checkbox color="primary" 
+                        (click)="$event.stopPropagation()"
+                        (change)="$event ? selection.toggle(row) : null"
+                        [checked]="selection.isSelected(row)"
+                        [aria-label]="checkboxLabel(row)">
           </mat-checkbox>
         </td>
       </tr>

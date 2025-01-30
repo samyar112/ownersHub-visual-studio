@@ -1,6 +1,7 @@
 const { ipcMain } = require('electron');
 const { getDb } = require('../sqlite3.database/database');
 const path = require('path');
+const archiver = require('archiver');
 
 function handleAddFilesData() {
   ipcMain.handle('addFilesData', async (event, data) => {
@@ -14,7 +15,8 @@ function handleAddFilesData() {
 
       let fileBuffer;
       if (data.file instanceof ArrayBuffer) {
-        fileBuffer = Buffer.from(data.file); // Convert ArrayBuffer to Buffer
+        // Convert ArrayBuffer to Buffer
+        fileBuffer = Buffer.from(data.file);
       } else {
         reject("File data is not in a valid format.");
         return;
@@ -84,7 +86,7 @@ function handleDeleteFilesData() {
 function handleDownloadFilesData() {
   ipcMain.handle('downloadFilesData', async (event, id) => {
     const db = getDb();
-    const downloadQuery = `SELECT id, file, fileName FROM files WHERE id = ?`;
+    const downloadQuery = `SELECT file, fileName FROM files WHERE id = ?`;
 
     return new Promise((resolve, reject) => {
       db.get(downloadQuery, [id], (err, row) => {
@@ -92,7 +94,6 @@ function handleDownloadFilesData() {
           reject('Error downloading data: ' + err.message);
         } else if (row) {
           resolve({
-            id: row.id,
             file: row.file,
             fileName: row.fileName
           });
@@ -104,32 +105,56 @@ function handleDownloadFilesData() {
     });
   });
 }
-
 function handleDownloadSelectedFiles() {
   ipcMain.handle('downloadSelectedFiles', async (event, selectedIds) => {
     const db = getDb();
-    // Use a parameterized query to fetch multiple files based on the selected IDs
-    const downloadQuery = `SELECT id, file, fileName FROM files WHERE id IN (${selectedIds.join(',')})`;
+    const placeholders = selectedIds.map(() => '?').join(',');
+    const downloadQuery = `SELECT file, fileName FROM files WHERE id IN (${placeholders})`;
 
     return new Promise((resolve, reject) => {
-      db.all(downloadQuery, [], (err, rows) => {
+      db.all(downloadQuery, selectedIds, (err, rows) => {
         if (err) {
           reject('Error downloading data: ' + err.message);
-        } else if (row) {
-          resolve({
-            id: row.id,
-            file: row.file,
-            fileName: row.fileName
-          });
-        } else {
-          reject('No file found with that ID');
+          return;
         }
-        db.close();
+
+        if (!rows.length) {
+          reject('No files found with that ID');
+          return;
+        }
+
+        // Create a ZIP using Archiver library
+        const zipBuffer = [];
+        const archive = archiver('zip', { zlib: { level: 9 } });
+
+        archive.on('data', chunk => zipBuffer.push(chunk));
+        archive.on('end', () => {
+          const bufferFile = Buffer.concat(zipBuffer);
+          // Send the buffer back to the renderer process
+          event.sender.send('download-file', bufferFile);
+          resolve(bufferFile); 
+        });
+
+        // Add files to the archive
+        rows.forEach(row => {
+          const fileData = row.file; 
+          const fileName = row.fileName; 
+
+          if (Buffer.isBuffer(fileData)) {
+            archive.append(fileData, { name: fileName });
+          } else {
+            console.error(`File data is not a buffer for ID: ${row.id}`);
+          }
+        });
+
+        archive.finalize().catch((error) => {
+          console.error('Error finalizing the archive:', error);
+          reject('Error finalizing the archive: ' + error.message);
+        });
       });
     });
   });
 }
-
 
 function registerFilesIPCHandlers() {
   handleAddFilesData();
