@@ -1,0 +1,9 @@
+.green-snackbar {
+  background-color: #4CAF50; /* or any green color you prefer */
+  color: white; /* Optional: To ensure the text is visible on the green background */
+}
+
+.red-snackbar {
+  background-color: #F44336; /* Red color */
+  color: white;
+}

@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Output, EventEmitter } from '@angular/core';
 import { MatDialogClose } from '@angular/material/dialog';
 import { MatDialogContent } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
@@ -6,7 +6,7 @@ import { MatCardModule,  } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Files } from '../../model/files';
+
 
 @Component({
   selector: 'app-file-upload-card',
