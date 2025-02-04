@@ -1,16 +1,4 @@
-<header class="flex w-full justify-between bg-gradient-to-r from-[#1e3a8a] to-[#14b8a6] pl-2 pr-2 pt-1 font-medium text-white">
-  <p> Owners Management</p>
-  <figure class="flex flex-row space-x-2 p-2">
-    <img class="h-6 w-6 object-fill" src="assets/management.png" alt="Admin">
-    <figcaption>
-      Welcome Admin!
-    </figcaption>
-  </figure>
-  <div class="flex items-center space-x-2">
-    <mat-icon>{{ isOnline ? 'wifi' : 'close' }}</mat-icon>
-    <span>{{ isOnline ? 'Online' : 'Offline' }}</span>
-  </div>
-</header>
+<app-header></app-header>
 
 <mat-sidenav-container [style.height]="'850px'" class="mb-10 mr-10 mt-2 flex w-full flex-row">
   <mat-sidenav class="flex flex-col" mode="side" #sidenav [style.width]="'14rem'"  opened>

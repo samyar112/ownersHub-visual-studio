@@ -9,12 +9,13 @@ import { Router } from '@angular/router';
 import { ErrorMessages } from './../error-messages.enum';
 import { FooterComponent } from './footer/footer.component';
 import { NewUserComponent } from './new-user/new-user.component';
+import { HeaderComponent } from '../home/header/header.component';
 
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, MatFormFieldModule, FormsModule, MatButtonModule, MatInputModule, FooterComponent, NewUserComponent],
+  imports: [CommonModule, MatFormFieldModule, FormsModule, MatButtonModule, MatInputModule, HeaderComponent, FooterComponent, NewUserComponent],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
 })
