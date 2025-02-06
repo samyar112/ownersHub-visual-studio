@@ -51,6 +51,7 @@ export class ViewFilesComponent implements OnInit {
   postal?: number;
 
   isUploading: boolean = false;
+  isSaveLocal: boolean = false;
 
   constructor(
     private ownerDataService: OwnerDataService,
@@ -120,6 +121,11 @@ export class ViewFilesComponent implements OnInit {
     }
   }
 
+  setSaveLocal(value: boolean) {
+    this.isSaveLocal = value;
+    this.onUpload(); 
+  }
+
   onUpload() {
     const dialogRef = this.dialog.open(FileUploadCardComponent, {
       disableClose: true
@@ -148,7 +154,12 @@ export class ViewFilesComponent implements OnInit {
           allData.file = binaryData;  // Update the file data to send the Blob
           this.isUploading = true
           try {
-            await this.filesDataService.addFilesData(allData);
+            if (this.isSaveLocal) {
+              await this.filesDataService.saveFilesLocal(allData);
+            } else {
+              await this.filesDataService.addFilesData(allData);
+            }
+            
             this.isUploading = false;
             this.loadFilesofOwner();
           } catch (error) {

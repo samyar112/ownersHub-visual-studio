@@ -12,7 +12,7 @@
 <mat-card style="border: 2px solid #1e3a8a; " class="mat-elevation-z8 mb-10 ml-4 mr-4 rounded">
   <div class="flex items-center justify-between p-4">
     <h1 style="font-size: x-large;">View Files</h1>
-    <button mat-flat-button color="primary" (click)="onUpload()">
+    <button mat-flat-button color="primary" (click)="setSaveLocal(false)">
     <mat-icon>file_upload</mat-icon>
     Upload</button>
   </div>
@@ -60,9 +60,12 @@
   </mat-card-content>
   <hr class="border-t to-white pb-2 pt-4">
   <div class="flex items-center justify-between p-4">
-    <!--TODO: Download the file-->
     <button mat-flat-button color="primary" (click)="onDownloadAsZip()">
-            <mat-icon>file_download</mat-icon>Download as Zip</button>
+      <mat-icon>file_download</mat-icon>Download as Zip
+    </button>
+    <button mat-flat-button color="primary" (click)="setSaveLocal(true)">
+      <mat-icon>file_upload</mat-icon>Upload on System Folder
+    </button>
   </div>
 </mat-card>
 

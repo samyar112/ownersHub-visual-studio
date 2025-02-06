@@ -11,5 +11,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="src\app\utility\file-upload-card\" />
+    <Folder Include="uploads\" />
   </ItemGroup>
 </Project>

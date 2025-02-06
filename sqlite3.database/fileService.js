@@ -2,13 +2,70 @@ const { ipcMain } = require('electron');
 const { getDb } = require('../sqlite3.database/database');
 const path = require('path');
 const archiver = require('archiver');
+const fs = require('fs');
+
+
+function handleSaveFilesLocal() {
+  ipcMain.handle('saveFilesLocal', async (event, data) => {
+
+    const saveDirectory = path.join(__dirname, '../uploads');
+    const filePath = path.join(saveDirectory, data.fileName)
+    const emptyFile = null;
+
+    // Ensure the directory exists
+    if (!fs.existsSync(saveDirectory)) {
+      fs.mkdirSync(saveDirectory);
+    }
+
+    
+    console.log(`File saved to: ${filePath}`);
+
+    const db = getDb();
+
+    const insertQuery = `
+    INSERT INTO files (accountId, file, fileName, fileExtension, fileSize, dateUploaded, filePath)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+  `;
+
+    return new Promise((resolve, reject) => {
+
+      let fileBuffer;
+      if (data.file instanceof ArrayBuffer) {
+        // Convert ArrayBuffer to Buffer
+        fileBuffer = Buffer.from(data.file);
+      } else {
+        reject("File data is not in a valid format.");
+        return;
+      }
+
+      fs.writeFileSync(filePath, fileBuffer);
+
+      db.run(insertQuery, [
+        data.accountId,
+        emptyFile,
+        data.fileName,
+        data.fileExtension,
+        data.fileSize,
+        data.dateUploaded,
+        filePath
+      ], function (err) {
+        if (err) {
+          reject('Error adding data: ' + err.message);
+        } else {
+          resolve('Data added successfully with ID: ' + this.lastID);
+        }
+      });
+      db.close();
+    });
+  });
+}
 
 function handleAddFilesData() {
   ipcMain.handle('addFilesData', async (event, data) => {
     const db = getDb();
     const insertQuery = `
-    INSERT INTO files (accountId, file, fileName, fileExtension, fileSize, dateUploaded)
-    VALUES (?, ?, ?, ?, ?, ?)
+    INSERT INTO files (accountId, file, fileName, fileExtension, fileSize, dateUploaded, filePath)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
   `;
 
     return new Promise((resolve, reject) => {
@@ -67,6 +124,14 @@ function handleGetFilesByAccountId() {
 }
 
 function handleDeleteFilesData() {
+  const savedFilePaths = path.join(__dirname, '../uploads');
+    //try {
+    //  fs.unlink(savedFilePaths);
+    //  console.log(`File ${savedFilePaths} was deleted successfully.`);
+    //} catch (err) {
+    //  console.error('Error deleting the file:', err);
+    //}
+
   ipcMain.handle('deleteFilesData', async (event, id) => {
     const db = getDb();
     const deleteQuery = `DELETE FROM files WHERE id = ?`;
@@ -157,6 +222,7 @@ function handleDownloadSelectedFiles() {
 }
 
 function registerFilesIPCHandlers() {
+  handleSaveFilesLocal();
   handleAddFilesData();
   handleDeleteFilesData();
   handleGetFilesByAccountId();

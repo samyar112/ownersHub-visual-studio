@@ -11,6 +11,7 @@ contextBridge.exposeInMainWorld('electron', {
   getOwnersAccountId: (accountId) => ipcRenderer.invoke('getOwnersAccountId', accountId),
 
   //Files Table
+  saveFilesLocal: (data) => ipcRenderer.invoke('saveFilesLocal', data),
   addFilesData: (data) => ipcRenderer.invoke('addFilesData', data),
   deleteFilesData: (id) => ipcRenderer.invoke('deleteFilesData', id),
   getFilesByAccountId: (accountId) => ipcRenderer.invoke('getFilesByAccountId', accountId),

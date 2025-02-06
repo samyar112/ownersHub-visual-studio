@@ -5,8 +5,11 @@ import { Files } from '../model/files';
   providedIn: 'root'
 })
 export class FilesDataService {
-
   constructor() { }
+
+  saveFilesLocal(data: Files) {
+    return (window as any).electron.saveFilesLocal(data);
+  }
 
   addFilesData(data: Files) {
     return (window as any).electron.addFilesData(data);
@@ -27,5 +30,4 @@ export class FilesDataService {
   downloadSelectedFiles(selectedIds: number[]) {
     return (window as any).electron.downloadSelectedFiles(selectedIds);
   }
-
 }

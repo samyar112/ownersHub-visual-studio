@@ -5,7 +5,6 @@ import { Owner } from '../model/owner';
   providedIn: 'root'
 })
 export class OwnerDataService {
-
   constructor() { }
 
   addOwnersData(data: Owner) {
