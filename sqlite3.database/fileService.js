@@ -1,26 +1,29 @@
-const { ipcMain } = require('electron');
+const { app, ipcMain } = require('electron');
 const { getDb } = require('../sqlite3.database/database');
 const path = require('path');
 const archiver = require('archiver');
 const fs = require('fs');
 
+//const saveDirectory = path.join('C:', 'ProgramData', 'OwnersHub-Demo', 'Uploaded_Files');
+const saveDirectory = path.join(app.getPath('appData'), 'owners-hub-demo', 'Uploaded_Files');
+
+
 
 function handleSaveFilesLocal() {
   ipcMain.handle('saveFilesLocal', async (event, data) => {
 
-    const saveDirectory = path.join(__dirname, '../uploads');
-    const filePath = path.join(saveDirectory, data.fileName)
-    const emptyFile = null;
-
-    // Ensure the directory exists
     if (!fs.existsSync(saveDirectory)) {
       fs.mkdirSync(saveDirectory);
     }
 
-    
-    console.log(`File saved to: ${filePath}`);
+    const filePath = path.join(saveDirectory, data.fileName)
+    const emptyFile = null;
 
     const db = getDb();
+    if (!db) {
+      reject('Database connection failed');
+      return;
+    }
 
     const insertQuery = `
     INSERT INTO files (accountId, file, fileName, fileExtension, fileSize, dateUploaded, filePath)
@@ -38,7 +41,7 @@ function handleSaveFilesLocal() {
         return;
       }
 
-      fs.writeFileSync(filePath, fileBuffer);
+      writeFileSync(filePath, fileBuffer);
 
       db.run(insertQuery, [
         data.accountId,
@@ -58,6 +61,16 @@ function handleSaveFilesLocal() {
       db.close();
     });
   });
+}
+
+function writeFileSync(filePath, file) {
+  fs.writeFileSync(filePath, file);
+  try {
+    console.log(`File successfully saved to: ${filePath}`);
+  } catch (err) {
+    console.error('Error writing the file:', err.message);
+    throw new Error(`Failed to write file to ${filePath}: ${err.message}`);
+  }
 }
 
 function handleAddFilesData() {
@@ -109,9 +122,9 @@ function handleGetFilesByAccountId() {
           const mappedFiles = rows.map(row => ({
             id: row.Id,
             accountId: row.accountId,
-            fileName: row.fileName,     
-            fileExtension: row.fileExtension,  
-            fileSize: row.fileSize,      
+            fileName: row.fileName,
+            fileExtension: row.fileExtension,
+            fileSize: row.fileSize,
             dateUploaded: row.dateUploaded
           }));
 
@@ -124,13 +137,12 @@ function handleGetFilesByAccountId() {
 }
 
 function handleDeleteFilesData() {
-  const savedFilePaths = path.join(__dirname, '../uploads');
-    //try {
-    //  fs.unlink(savedFilePaths);
-    //  console.log(`File ${savedFilePaths} was deleted successfully.`);
-    //} catch (err) {
-    //  console.error('Error deleting the file:', err);
-    //}
+  //try {
+  //  fs.unlink(savedFilePaths);
+  //  console.log(`File ${savedFilePaths} was deleted successfully.`);
+  //} catch (err) {
+  //  console.error('Error deleting the file:', err);
+  //}
 
   ipcMain.handle('deleteFilesData', async (event, id) => {
     const db = getDb();
@@ -197,13 +209,13 @@ function handleDownloadSelectedFiles() {
           const bufferFile = Buffer.concat(zipBuffer);
           // Send the buffer back to the renderer process
           event.sender.send('download-file', bufferFile);
-          resolve(bufferFile); 
+          resolve(bufferFile);
         });
 
         // Add files to the archive
         rows.forEach(row => {
-          const fileData = row.file; 
-          const fileName = row.fileName; 
+          const fileData = row.file;
+          const fileName = row.fileName;
 
           if (Buffer.isBuffer(fileData)) {
             archive.append(fileData, { name: fileName });
