@@ -14,6 +14,7 @@ contextBridge.exposeInMainWorld('electron', {
   saveFilesLocal: (data) => ipcRenderer.invoke('saveFilesLocal', data),
   addFilesData: (data) => ipcRenderer.invoke('addFilesData', data),
   deleteFilesData: (id) => ipcRenderer.invoke('deleteFilesData', id),
+  deleteMultipleFiles: (accountId) => ipcRenderer.invoke('deleteMultipleFiles', accountId),
   getFilesByAccountId: (accountId) => ipcRenderer.invoke('getFilesByAccountId', accountId),
   downloadFilesData: (id) => ipcRenderer.invoke('downloadFilesData', id),
   downloadSelectedFiles: (selectedIds) => ipcRenderer.invoke('downloadSelectedFiles', selectedIds)

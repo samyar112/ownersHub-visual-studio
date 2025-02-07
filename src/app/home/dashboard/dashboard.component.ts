@@ -8,6 +8,7 @@ import { MenuComponent } from "./menu/menu.component";
 import { Router, RouterLink } from '@angular/router';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { OwnerDataService } from '../../dataservice/owners.service';
+import { FilesDataService } from '../../dataservice/files.service';
 import { Owner } from '../../model/owner';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogBoxComponent } from '../../utility/dialog-box/dialog-box.component';
@@ -34,7 +35,8 @@ export class DashboardComponent implements OnInit {
   totalItems = 0;
  
   constructor(
-    private ownerDataService: OwnerDataService, 
+    private ownerDataService: OwnerDataService,
+    private filesDataService: FilesDataService,
     private router: Router) {}
   
   ngOnInit() {
@@ -67,7 +69,7 @@ export class DashboardComponent implements OnInit {
     this.router.navigate(['/view-files', ownerData.id]);
   }
    
-  async onDelete(id: number) {
+  async onDelete(ownerData: Owner) {
     const dialogRef = this.dialog.open(DialogBoxComponent, {
       data: {
         title: 'Confirm Deletion?',
@@ -80,13 +82,18 @@ export class DashboardComponent implements OnInit {
 
     dialogRef.componentInstance.confirm.subscribe(async () => {
       try {
-        await this.ownerDataService.deleteOwnersData(id);
-        this.loadOwners(); 
+        await this.filesDataService.deleteMultipleFiles(ownerData.accountId);
+        await this.ownerDataService.deleteOwnersData(ownerData.id);
+
+        //this.deleteFiles(ownerData.accountId);
+
+        this.loadOwners();
       } catch (error: any) {
         alert('Error deleting owner data. Please try again.');
       }
     });
   }
+
 
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;

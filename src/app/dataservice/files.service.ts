@@ -19,6 +19,11 @@ export class FilesDataService {
     return (window as any).electron.deleteFilesData(id);
   }
 
+  deleteMultipleFiles(accountId: number) {
+    return (window as any).electron.deleteMultipleFiles(accountId);
+  }
+
+
   getFilesByAccountId(accountId: number) {
     return (window as any).electron.getFilesByAccountId(accountId);
   }

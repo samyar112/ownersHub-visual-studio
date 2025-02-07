@@ -4,10 +4,7 @@ const path = require('path');
 const archiver = require('archiver');
 const fs = require('fs');
 
-//const saveDirectory = path.join('C:', 'ProgramData', 'OwnersHub-Demo', 'Uploaded_Files');
 const saveDirectory = path.join(app.getPath('appData'), 'owners-hub-demo', 'Uploaded_Files');
-
-
 
 function handleSaveFilesLocal() {
   ipcMain.handle('saveFilesLocal', async (event, data) => {
@@ -137,12 +134,6 @@ function handleGetFilesByAccountId() {
 }
 
 function handleDeleteFilesData() {
-  //try {
-  //  fs.unlink(savedFilePaths);
-  //  console.log(`File ${savedFilePaths} was deleted successfully.`);
-  //} catch (err) {
-  //  console.error('Error deleting the file:', err);
-  //}
 
   ipcMain.handle('deleteFilesData', async (event, id) => {
     const db = getDb();
@@ -153,6 +144,22 @@ function handleDeleteFilesData() {
           reject('Error deleting data: ' + err.message);
         } else {
           resolve('Data deleted successfully');
+        }
+        db.close();
+      });
+    });
+  });
+}
+function handleDeleteMultipleFiles() {
+  ipcMain.handle('deleteMultipleFiles', async (event, accountId) => {
+    const db = getDb();
+    const deleteQuery = `DELETE FROM files WHERE accountId = ?`;
+    return new Promise((resolve, reject) => {
+      db.run(deleteQuery, [accountId], function (err) {
+        if (err) {
+          reject('Error deleting files: ' + err.message);
+        } else {
+          resolve('Files deleted successfully');
         }
         db.close();
       });
@@ -237,6 +244,7 @@ function registerFilesIPCHandlers() {
   handleSaveFilesLocal();
   handleAddFilesData();
   handleDeleteFilesData();
+  handleDeleteMultipleFiles();
   handleGetFilesByAccountId();
   handleDownloadFilesData();
   handleDownloadSelectedFiles();

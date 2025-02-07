@@ -10,7 +10,10 @@
     </BuildCommand>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="uploads\**" />
+    <TypeScriptConfiguration Remove="uploads\**" />
+  </ItemGroup>
+  <ItemGroup>
     <Folder Include="src\app\utility\file-upload-card\" />
-    <Folder Include="uploads\" />
   </ItemGroup>
 </Project>
