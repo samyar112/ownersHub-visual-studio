@@ -82,10 +82,19 @@ export class DashboardComponent implements OnInit {
 
     dialogRef.componentInstance.confirm.subscribe(async () => {
       try {
-        await this.filesDataService.deleteMultipleFiles(ownerData.accountId);
+        const files = await this.filesDataService.getFilesByAccountId(ownerData.accountId);
+        for (const file of files) {
+          const filePath = file?.filePath;
+          const fileId = file?.id;
+          if (!filePath) {
+            await this.filesDataService.deleteFilesData(fileId);
+          } else {
+            await this.filesDataService.deleteLocalFile(filePath);
+            await this.filesDataService.deleteFilesData(fileId);
+          }
+        }
         await this.ownerDataService.deleteOwnersData(ownerData.id);
 
-        //this.deleteFiles(ownerData.accountId);
 
         this.loadOwners();
       } catch (error: any) {

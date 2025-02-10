@@ -2,6 +2,16 @@ const { ipcMain } = require('electron');
 const { getDb } = require('../sqlite3.database/database');
 const path = require('path');
 
+module.exports = { registerIPCHandlers };
+function registerIPCHandlers() {
+  handleAddOwnersData();
+  handleEditOwnersData();
+  handleDeleteOwnersData();
+  handleGetAllOwnersData();
+  handleGetOwnersDataById();
+  handleGetOwnersAccountId();
+}
+
 function handleAddOwnersData() {
   ipcMain.handle('addOwnersData', async (event, data) => {
     const db = getDb();
@@ -66,7 +76,6 @@ function handleEditOwnersData() {
     });
   });
 }
-
 function handleDeleteOwnersData() {
   ipcMain.handle('deleteOwnersData', async (event, id) => {
     const db = getDb();
@@ -95,7 +104,7 @@ function handleGetAllOwnersData() {
         } else {
           // Map rows to the correct owner model format
           const owners = rows.map(row => ({
-            id: row.id,          // Now including 'id'
+            id: row.id, 
             accountId: row.accountId,
             ownerName: row.ownerName,
             contactName: row.contactName,
@@ -127,7 +136,7 @@ function handleGetOwnersDataById() {
           // Map the row to the Owner model
           if (row) {
             resolve({
-              id: row.id,          // Now including 'id'
+              id: row.id,
               accountId: row.accountId,
               ownerName: row.ownerName,
               contactName: row.contactName,
@@ -166,13 +175,3 @@ function handleGetOwnersAccountId() {
   });
 }
 
-function registerIPCHandlers() {
-  handleAddOwnersData();
-  handleEditOwnersData();
-  handleDeleteOwnersData();
-  handleGetAllOwnersData();
-  handleGetOwnersDataById();
-  handleGetOwnersAccountId();
-}
-
-module.exports = { registerIPCHandlers };

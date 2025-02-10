@@ -6,4 +6,5 @@ export interface Files {
   fileExtension?: string;
   fileSize?: string;
   dateUploaded?: string;
+  filePath?: string;
 }

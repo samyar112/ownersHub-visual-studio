@@ -4,7 +4,19 @@ const path = require('path');
 const archiver = require('archiver');
 const fs = require('fs');
 
+//const saveDirectory = path.join('C:', 'ProgramData', 'OwnersHub-Demo', 'Uploaded_Files');
 const saveDirectory = path.join(app.getPath('appData'), 'owners-hub-demo', 'Uploaded_Files');
+
+module.exports = { registerFilesIPCHandlers };
+function registerFilesIPCHandlers() {
+  handleSaveFilesLocal();
+  handleAddFilesData();
+  handleDeleteFilesData();
+  handleLocalDeleteFile();
+  handleGetFilesByAccountId();
+  handleDownloadFilesData();
+  handleDownloadSelectedFiles();
+}
 
 function handleSaveFilesLocal() {
   ipcMain.handle('saveFilesLocal', async (event, data) => {
@@ -13,7 +25,17 @@ function handleSaveFilesLocal() {
       fs.mkdirSync(saveDirectory);
     }
 
-    const filePath = path.join(saveDirectory, data.fileName)
+    let index = 1;
+    const fileExtension = path.extname(data.fileName);
+    const baseName = path.basename(data.fileName, fileExtension);
+
+    let filePath = path.join(saveDirectory, data.fileName);
+
+    while (fs.existsSync(filePath)) {
+      filePath = path.join(saveDirectory, `${baseName}(${index})${fileExtension}`);
+      index++;
+    }
+
     const emptyFile = null;
 
     const db = getDb();
@@ -122,7 +144,8 @@ function handleGetFilesByAccountId() {
             fileName: row.fileName,
             fileExtension: row.fileExtension,
             fileSize: row.fileSize,
-            dateUploaded: row.dateUploaded
+            dateUploaded: row.dateUploaded,
+            filePath: row.filePath
           }));
 
           resolve(mappedFiles);
@@ -150,23 +173,21 @@ function handleDeleteFilesData() {
     });
   });
 }
-function handleDeleteMultipleFiles() {
-  ipcMain.handle('deleteMultipleFiles', async (event, accountId) => {
-    const db = getDb();
-    const deleteQuery = `DELETE FROM files WHERE accountId = ?`;
-    return new Promise((resolve, reject) => {
-      db.run(deleteQuery, [accountId], function (err) {
-        if (err) {
-          reject('Error deleting files: ' + err.message);
-        } else {
-          resolve('Files deleted successfully');
-        }
-        db.close();
-      });
-    });
+function handleLocalDeleteFile() {
+  ipcMain.handle('deleteLocalFile', async (event, filePath) => {
+    try {
+      const resolvedPath = path.resolve(filePath);
+      console.log('Resolved Path:', resolvedPath);
+
+      // Ensure the file exists before attempting to delete
+      await fs.promises.access(resolvedPath); // Check if the file exists
+      await fs.promises.unlink(resolvedPath); // Delete the file
+      console.log('File deleted successfully:', resolvedPath);
+    } catch (err) {
+      console.error('Error deleting file:', err);
+    }
   });
 }
-
 function handleDownloadFilesData() {
   ipcMain.handle('downloadFilesData', async (event, id) => {
     const db = getDb();
@@ -239,15 +260,3 @@ function handleDownloadSelectedFiles() {
     });
   });
 }
-
-function registerFilesIPCHandlers() {
-  handleSaveFilesLocal();
-  handleAddFilesData();
-  handleDeleteFilesData();
-  handleDeleteMultipleFiles();
-  handleGetFilesByAccountId();
-  handleDownloadFilesData();
-  handleDownloadSelectedFiles();
-}
-
-module.exports = { registerFilesIPCHandlers };

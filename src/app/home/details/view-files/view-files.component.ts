@@ -189,7 +189,18 @@ export class ViewFilesComponent implements OnInit {
 
     dialogRef.componentInstance.confirm.subscribe(async () => {
       try {
-        await this.filesDataService.deleteFilesData(id);
+        // Finds the file based on the id. 
+        const file = this.filesArray.find(f => f.id === id);
+          const filePath = file?.filePath;
+
+          if (!filePath) {
+            await this.filesDataService.deleteFilesData(id);
+          } else {
+            // Call the deleteLocalFile method from the service
+            await this.filesDataService.deleteLocalFile(filePath!);
+            await this.filesDataService.deleteFilesData(id);
+          }
+        // Refresh the files after deletion
         this.loadFilesofOwner();
       } catch (error: any) {
         alert('Error deleting owner data. Please try again.');
