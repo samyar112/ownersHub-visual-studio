@@ -132,7 +132,7 @@ function handleGetFilesByAccountId() {
   ipcMain.handle('getFilesByAccountId', async (event, accountId) => {
     const db = getDb();
     return new Promise((resolve, reject) => {
-      const selectQuery = `SELECT * FROM files WHERE accountId = ? ORDER BY Id DESC`;
+      const selectQuery = `SELECT * FROM files WHERE accountId = ? ORDER BY dateUploaded DESC`;
       db.all(selectQuery, [accountId], (err, rows) => {
         if (err) {
           console.error("Error querying the database:", err);
@@ -155,7 +155,6 @@ function handleGetFilesByAccountId() {
     });
   });
 }
-
 function handleDeleteFilesData() {
 
   ipcMain.handle('deleteFilesData', async (event, id) => {
