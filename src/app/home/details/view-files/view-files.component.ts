@@ -209,9 +209,17 @@ export class ViewFilesComponent implements OnInit {
   }
 
   async onDownload(id: number) {
-    try { 
-      const fileData = await this.filesDataService.downloadFilesData(id);
-      this.downloadHelper(fileData.file, 'application/octet-stream', fileData.fileName,)
+    try {
+      const file = this.filesArray.find(f => f.id === id);
+      const filePath = file?.filePath;
+      if (!filePath) {
+        //const fileData = await this.filesDataService.downloadFilesData(id);
+        this.downloadHelper(file?.file || null, 'application/octet-stream', file?.fileName)
+      } else {
+        const fileData = await this.filesDataService.downloadLocalFile(filePath)
+        this.downloadHelper(fileData, 'application/octet-stream', file?.fileName)
+      }
+     
     } catch (error: any) {
       console.error('Error downloading file:', error);
     }
@@ -231,7 +239,7 @@ export class ViewFilesComponent implements OnInit {
   }
 
   //Helper method to download files and zip
-  downloadHelper(blobData: File, type: string, fileName?: string,) {
+  downloadHelper(blobData: File | null, type: string, fileName?: string,) {
 
     if (!blobData) {
       throw new Error('File data is empty or not found.');

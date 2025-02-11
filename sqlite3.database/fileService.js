@@ -14,7 +14,7 @@ function registerFilesIPCHandlers() {
   handleDeleteFilesData();
   handleLocalDeleteFile();
   handleGetFilesByAccountId();
-  handleDownloadFilesData();
+  handleDownloadLocalFile();
   handleDownloadSelectedFiles();
 }
 
@@ -25,16 +25,12 @@ function handleSaveFilesLocal() {
       fs.mkdirSync(saveDirectory);
     }
 
-    let index = 1;
+    let timeStamp = Date.now();
+    const lastFourDigits = timeStamp % 10000;
     const fileExtension = path.extname(data.fileName);
     const baseName = path.basename(data.fileName, fileExtension);
 
-    let filePath = path.join(saveDirectory, data.fileName);
-
-    while (fs.existsSync(filePath)) {
-      filePath = path.join(saveDirectory, `${baseName}(${index})${fileExtension}`);
-      index++;
-    }
+    let filePath = path.join(saveDirectory, `${baseName}_${lastFourDigits}${fileExtension}`);
 
     const emptyFile = null;
 
@@ -142,6 +138,7 @@ function handleGetFilesByAccountId() {
             id: row.Id,
             accountId: row.accountId,
             fileName: row.fileName,
+            file: row.file,
             fileExtension: row.fileExtension,
             fileSize: row.fileSize,
             dateUploaded: row.dateUploaded,
@@ -187,26 +184,27 @@ function handleLocalDeleteFile() {
     }
   });
 }
-function handleDownloadFilesData() {
-  ipcMain.handle('downloadFilesData', async (event, id) => {
-    const db = getDb();
-    const downloadQuery = `SELECT file, fileName FROM files WHERE id = ?`;
 
-    return new Promise((resolve, reject) => {
-      db.get(downloadQuery, [id], (err, row) => {
-        if (err) {
-          reject('Error downloading data: ' + err.message);
-        } else if (row) {
-          resolve({
-            file: row.file,
-            fileName: row.fileName
-          });
-        } else {
-          reject('No file found with that ID');
-        }
-        db.close();
-      });
-    });
+function handleDownloadLocalFile() {
+  ipcMain.handle('downloadLocalFile', async (event, filePath) => {
+    console.log('I am here:', filePath);
+    try {
+      const resolvedPath = path.resolve(filePath);
+      console.log('Resolved Path:', resolvedPath);
+
+      // Check if file exists
+      await fs.promises.access(resolvedPath);
+
+      // Read the file as a buffer
+      const fileBuffer = await fs.promises.readFile(resolvedPath);
+      console.log('File read successfully:', resolvedPath);
+
+      // Send the buffer to the renderer process
+      return fileBuffer;
+    } catch (err) {
+      console.error('Error reading file:', err);
+      throw new Error('File not found or unable to read.');
+    }
   });
 }
 function handleDownloadSelectedFiles() {

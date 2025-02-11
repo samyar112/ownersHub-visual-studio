@@ -27,9 +27,10 @@ export class FilesDataService {
     return (window as any).electron.getFilesByAccountId(accountId);
   }
 
-  downloadFilesData(id: number) {
-    return (window as any).electron.downloadFilesData(id);
+  downloadLocalFile(filePath: string) {
+    return (window as any).electron.downloadLocalFile(filePath);
   }
+  
 
   downloadSelectedFiles(selectedIds: number[]) {
     return (window as any).electron.downloadSelectedFiles(selectedIds);

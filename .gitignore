@@ -42,3 +42,4 @@ testem.log
 Thumbs.db
 /.vs/ownersHub-demo
 /.vs
+/obj/Debug
