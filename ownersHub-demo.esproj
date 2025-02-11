@@ -15,5 +15,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="src\app\utility\file-upload-card\" />
+    <Folder Include="src\app\utility\login-card\" />
   </ItemGroup>
 </Project>

@@ -1,0 +1,35 @@
+﻿<mat-card class="mat-elevation-z8 border-gray-300 bg-white p-4 mx-auto border shadow-lg">
+  <mat-card-title class="mb-4 pb-4 text-xl font-semibold">Register to generate a PIN.</mat-card-title>
+  <hr>
+  <mat-card-content>
+    <form [formGroup]="userForm">
+      <mat-form-field appearance="outline" class="mb-4 w-full">
+        <mat-label>Username</mat-label>
+
+        <mat-icon matPrefix>person</mat-icon>
+        <input matInput formControlName="username" placeholder="Enter your username">
+        <mat-error *ngIf="userForm.controls['username'].invalid && (isFormSubmitted || userForm.controls['username'].touched || userForm.controls['username'].dirty)">
+          This is required
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="mb-4 w-full">
+        <mat-label>Password</mat-label>
+        <mat-icon matPrefix>lock</mat-icon>
+        <input matInput formControlName="username" type="password" placeholder="Enter your password">
+        <mat-error *ngIf="userForm.controls['username'].invalid && (isFormSubmitted || userForm.controls['username'].touched || userForm.controls['username'].dirty)">
+          This is required
+        </mat-error>
+      </mat-form-field>
+    </form>
+  </mat-card-content>
+
+  <mat-card-actions class="mt-4 gap-6 flex justify-evenly">
+    <button mat-flat-button color="primary"
+            class="px-3 py-2 w-full rounded">
+      Submit
+    </button>
+  </mat-card-actions>
+</mat-card>
+
+
