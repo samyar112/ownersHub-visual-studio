@@ -184,7 +184,6 @@ function handleLocalDeleteFile() {
     }
   });
 }
-
 function handleDownloadLocalFile() {
   ipcMain.handle('downloadLocalFile', async (event, filePath) => {
     console.log('I am here:', filePath);
@@ -211,10 +210,10 @@ function handleDownloadSelectedFiles() {
   ipcMain.handle('downloadSelectedFiles', async (event, selectedIds) => {
     const db = getDb();
     const placeholders = selectedIds.map(() => '?').join(',');
-    const downloadQuery = `SELECT file, fileName FROM files WHERE id IN (${placeholders})`;
+    const downloadQuery = `SELECT file, fileName, filePath FROM files WHERE id IN (${placeholders})`;
 
     return new Promise((resolve, reject) => {
-      db.all(downloadQuery, selectedIds, (err, rows) => {
+      db.all(downloadQuery, selectedIds, async (err, rows) => {
         if (err) {
           reject('Error downloading data: ' + err.message);
           return;
@@ -225,34 +224,47 @@ function handleDownloadSelectedFiles() {
           return;
         }
 
-        // Create a ZIP using Archiver library
-        const zipBuffer = [];
-        const archive = archiver('zip', { zlib: { level: 9 } });
+        try {
+          // Create a ZIP using Archiver library
+          const zipBuffer = [];
+          const archive = archiver('zip', { zlib: { level: 9 } });
 
-        archive.on('data', chunk => zipBuffer.push(chunk));
-        archive.on('end', () => {
-          const bufferFile = Buffer.concat(zipBuffer);
-          // Send the buffer back to the renderer process
-          event.sender.send('download-file', bufferFile);
-          resolve(bufferFile);
-        });
+          archive.on('data', chunk => zipBuffer.push(chunk));
+          archive.on('end', () => {
+            const bufferFile = Buffer.concat(zipBuffer);
+            // Send the buffer back to the renderer process
+            event.sender.send('download-file', bufferFile);
+            resolve(bufferFile);
+          });
 
-        // Add files to the archive
-        rows.forEach(row => {
-          const fileData = row.file;
-          const fileName = row.fileName;
+          // Loop through the rows and process each file
+          for (const row of rows) {
+            const fileName = row.fileName;
+            let fileBuffer;
 
-          if (Buffer.isBuffer(fileData)) {
-            archive.append(fileData, { name: fileName });
-          } else {
-            console.error(`File data is not a buffer for ID: ${row.id}`);
+            // Check if the file is stored as a buffer or in the file system
+            if (Buffer.isBuffer(row.file)) {
+              fileBuffer = row.file;
+            } else if (row.filePath) {
+              // Read the file from the file path asynchronously
+              fileBuffer = await fs.promises.readFile(row.filePath);
+            } else {
+              console.error(`No file or filePath for ID: ${row.id}`);
+              continue; 
+            }
+
+            // Append fileBuffer to the archive
+            if (fileBuffer) {
+              archive.append(fileBuffer, { name: fileName });
+            }
           }
-        });
 
-        archive.finalize().catch((error) => {
-          console.error('Error finalizing the archive:', error);
-          reject('Error finalizing the archive: ' + error.message);
-        });
+          // Finalize the archive after all files are appended
+          archive.finalize();
+        } catch (error) {
+          console.error('Error processing files for ZIP archive:', error);
+          reject('Error processing files: ' + error.message);
+        }
       });
     });
   });

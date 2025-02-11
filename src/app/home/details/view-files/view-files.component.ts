@@ -235,6 +235,16 @@ export class ViewFilesComponent implements OnInit {
       } catch (error: any) {
         console.error('Error downloading ZIP file:', error);
       }
+    } else {
+      this.dialog.open(DialogBoxComponent, {
+        data: {
+          title: 'No Files Selected',
+          content: 'Please select at least one file!',
+          closeButtonText: 'Close',
+          confirmButtonText: 'OK',
+        },
+        disableClose: true
+      });
     }
   }
 
