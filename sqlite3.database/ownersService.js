@@ -2,8 +2,8 @@ const { ipcMain } = require('electron');
 const { getDb } = require('../sqlite3.database/database');
 const path = require('path');
 
-module.exports = { registerIPCHandlers };
-function registerIPCHandlers() {
+module.exports = { registerOwnersIPCHandlers };
+function registerOwnersIPCHandlers() {
   handleAddOwnersData();
   handleEditOwnersData();
   handleDeleteOwnersData();
@@ -11,7 +11,6 @@ function registerIPCHandlers() {
   handleGetOwnersDataById();
   handleGetOwnersAccountId();
 }
-
 function handleAddOwnersData() {
   ipcMain.handle('addOwnersData', async (event, data) => {
     const db = getDb();
@@ -42,7 +41,6 @@ function handleAddOwnersData() {
     });
   });
 }
-
 function handleEditOwnersData() {
   ipcMain.handle('editOwnersData', async (event, data) => {
     const db = getDb();
@@ -92,7 +90,6 @@ function handleDeleteOwnersData() {
     });
   });
 }
-
 function handleGetAllOwnersData() {
   ipcMain.handle('getAllOwnersData', async () => {
     const db = getDb();
@@ -122,7 +119,6 @@ function handleGetAllOwnersData() {
     });
   });
 }
-
 function handleGetOwnersDataById() {
   ipcMain.handle('getOwnersDataById', async (event, id) => {
     const db = getDb();
@@ -156,7 +152,6 @@ function handleGetOwnersDataById() {
     });
   });
 }
-
 function handleGetOwnersAccountId() {
   ipcMain.handle('getOwnersAccountId', async (event, accountId) => {
     const db = getDb();
@@ -174,4 +169,3 @@ function handleGetOwnersAccountId() {
     });
   });
 }
-

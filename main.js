@@ -1,7 +1,8 @@
 const { ipcMain } = require('electron');
 const { app, BrowserWindow } = require('electron');
 const path = require('node:path');
-const { registerIPCHandlers } = require('./sqlite3.database/ownersService');
+const { registerLoginIPCHandlers } = require('./sqlite3.database/loginService');
+const { registerOwnersIPCHandlers } = require('./sqlite3.database/ownersService');
 const { registerFilesIPCHandlers } = require('./sqlite3.database/fileService');
 
 
@@ -33,7 +34,8 @@ function createWindow() {
 
 app.whenReady().then(() => {
   createWindow();
-  registerIPCHandlers();
+  registerLoginIPCHandlers();
+  registerOwnersIPCHandlers();
   registerFilesIPCHandlers();
 
   app.on('activate', () => {

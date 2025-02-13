@@ -77,7 +77,6 @@ function handleSaveFilesLocal() {
     });
   });
 }
-
 function writeFileSync(filePath, file) {
   fs.writeFileSync(filePath, file);
   try {
@@ -87,7 +86,6 @@ function writeFileSync(filePath, file) {
     throw new Error(`Failed to write file to ${filePath}: ${err.message}`);
   }
 }
-
 function handleAddFilesData() {
   ipcMain.handle('addFilesData', async (event, data) => {
     const db = getDb();
@@ -153,7 +151,6 @@ function handleGetFilesByAccountId() {
   });
 }
 function handleDeleteFilesData() {
-
   ipcMain.handle('deleteFilesData', async (event, id) => {
     const db = getDb();
     const deleteQuery = `DELETE FROM files WHERE id = ?`;

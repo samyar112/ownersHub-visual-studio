@@ -1,4 +1,3 @@
-/// <reference path="../utility/file-upload-card/file-upload-card.component.ts" />
 import { Component } from '@angular/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';

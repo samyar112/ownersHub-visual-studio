@@ -2,6 +2,10 @@ const { contextBridge, ipcRenderer } = require('electron');
 
 // Expose the necessary APIs to the renderer process
 contextBridge.exposeInMainWorld('electron', {
+ 
+  // Login Table
+  addLoginData: (data) => ipcRenderer.invoke('addLoginData', data),
+
   // Owners Table
   addOwnersData: (data) => ipcRenderer.invoke('addOwnersData', data),
   editOwnersData: (data) => ipcRenderer.invoke('editOwnersData', data),
