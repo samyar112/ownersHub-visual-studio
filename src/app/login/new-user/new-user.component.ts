@@ -33,33 +33,21 @@ export class NewUserComponent {
       disableClose: true
     });
 
-    const pin = 1234;
-    const username = 'hello';
-    const password = 'whatsup?';
-    const allData = {
-      username: username,
-      password: password,
-      pin: pin
-    };
-    try {
-      this.loginDataService.addLoginData(allData);
-    } catch (error) {
-      console.error('Login Upload Failed:', error)
-    }
-
+    const pin = 1234
     const componentInstance = dialogRef.componentInstance as LoginCardComponent;
     if (componentInstance) {
       componentInstance.loginInfo.subscribe(async (loginData: any) => {
         const allData = {
-          username: username,
-          password: password,
+          username: loginData.username,
+          password: loginData.password,
           pin: pin
         };
-        //try {
-        //  await this.loginDataService.addLoginData(allData);
-        //} catch (error) {
-        //  console.error('Login Upload Failed:', error)
-        //}
+        try {
+          await this.loginDataService.addLoginData(allData);
+          dialogRef.close();
+        } catch (error) {
+          console.error('Login Upload Failed:', error)
+        }
       });
     }
   }

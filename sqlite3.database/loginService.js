@@ -5,6 +5,7 @@ const path = require('path');
 module.exports = { registerLoginIPCHandlers };
 function registerLoginIPCHandlers() {
   handleAddLoginData();
+  handleGetAllLoginData()
 }
 
 function handleAddLoginData() {
@@ -14,9 +15,7 @@ function handleAddLoginData() {
       INSERT INTO login (username, password, pin)
       VALUES (?, ?, ?)
     `;
-
     try {
-      // Using a Promise to handle the insert operation
       const result = await new Promise((resolve, reject) => {
         db.run(insertQuery, [
           data.username,
@@ -30,13 +29,35 @@ function handleAddLoginData() {
           }
         });
       });
-
       db.close(); 
-
       return result;
     } catch (error) {
       db.close(); 
       throw error; 
+    }
+  });
+}
+
+function handleGetAllLoginData() {
+  ipcMain.handle('getAllLoginData', async () => {
+    const db = getDb();
+    try {
+      const selectQuery = 'SELECT * FROM login';
+      const rows = await new Promise((resolve, reject) => {
+        db.all(selectQuery, (err, rows) => {
+          console.log('Made the promise Login Data', rows)
+          if (err) {
+            reject(err);
+          } else {
+            resolve(rows); 
+          }
+        });
+      });
+      db.close();
+      return rows;
+    } catch (err) {
+      console.error('Error querying the database:', err);
+      throw new Error(err);
     }
   });
 }

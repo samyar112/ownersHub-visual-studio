@@ -11,4 +11,7 @@ export class LoginDataService {
     return (window as any).electron.addLoginData(data);
   }
 
+  getAllLoginData() {
+    return (window as any).electron.getAllLoginData();
+  }
 }

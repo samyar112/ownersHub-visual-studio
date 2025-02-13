@@ -5,16 +5,17 @@ import { MatCardModule, } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, Router} from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
+import { MatDialogClose } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Login } from '../../model/login';
+import { LoginDataService } from '../../dataservice/login.service';
 
 
 @Component({
   selector: 'app-login-card',
   standalone: true,
-  imports: [CommonModule, MatIconModule, MatInputModule, MatCardModule, MatButtonModule, MatFormFieldModule, ReactiveFormsModule],
+  imports: [CommonModule, MatIconModule, MatInputModule, MatCardModule, MatDialogClose, MatButtonModule, MatFormFieldModule, ReactiveFormsModule],
   templateUrl: './login-card.component.html',
   styleUrl: './login-card.component.css'
 })
@@ -22,9 +23,9 @@ export class LoginCardComponent {
   @Output() loginInfo = new EventEmitter<any>();
   userForm: FormGroup;
   isFormSubmitted: boolean = false;
-  constructor (
-    private route: ActivatedRoute,
-    private router: Router,
+  loginArray:Login[] = []
+  constructor(
+    private loginService: LoginDataService,
     private snackBar: MatSnackBar
   ) {
     this.userForm = new FormGroup({
@@ -34,27 +35,30 @@ export class LoginCardComponent {
     });
   }
 
-  onSubmit() {
-    this.isFormSubmitted = true;
-    //if (this.userForm.valid) {
+  async onSubmit() {
+   this.isFormSubmitted = true;
+   if (this.userForm.valid) {
+     this.loginArray = await this.loginService.getAllLoginData();
+
+     const newUsername = this.userForm.value.username;
+     // Iterate through the array of usernames
+     const usernameExists = this.loginArray.some(user => user.username === newUsername)
+     if (usernameExists) {
+       this.userForm.controls['username'].setErrors({ usernameTaken: true });
+       return;
+     }
       const loginData: Login = {
-        username: this.userForm.value.username,
-        password: this.userForm.value.password
+        username: newUsername,
+        password: this.userForm.value.password,
+        pin: 0
       };
-      this.snackBar.open('File successfully uploaded.', 'Close', {
+
+      this.snackBar.open('Successfully Registered', 'Close', {
         duration: 3000
       });
       //Emit file Data
       this.loginInfo.emit(loginData);
-    //}
-
-    //clearFile() {
-    //  this.file = null;
-    //  this.fileName = '';
-    //  this.fileExtension = '';
-    //  this.fileSize = '';
-    //  this.dateUploaded = '';
-    //}
+    }
   }
 
 }
