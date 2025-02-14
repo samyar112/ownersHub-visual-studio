@@ -1,34 +1,34 @@
-<app-header></app-header>
+﻿<app-header></app-header>
 
 <mat-sidenav-container [style.height]="'850px'" class="mb-10 mr-10 mt-2 flex w-full flex-row">
   <mat-sidenav class="flex flex-col" mode="side" #sidenav [style.width]="'14rem'"  opened>
 
-    <div *ngIf="sidenav.opened" class="space-y-4 rounded-br-lg rounded-tr-lg bg-[#0b588c] p-4">
-      <a [routerLink]="['/home']" class="group flex transform items-center space-x-2 rounded p-2 text-gray-100 transition-transform duration-200 hover:bg-blue-400 hover:scale-110">
+    <div *ngIf="sidenav.opened" class="space-y-4 p-4 rounded-br-lg rounded-tr-lg bg-[#0b588c]">
+      <a [routerLink]="['/home']" class="space-x-2 p-2 text-gray-100 group flex transform items-center rounded transition-transform duration-200 hover:bg-blue-400 hover:scale-110">
         <mat-icon class="group-hover:scale-125 transition-transform duration-200">home</mat-icon>
         <span>Dashboard</span>
       </a>
-      <hr class="border-t border-white p-2">
+      <hr class="border-white p-2 border-t">
 
-      <a [routerLink]="['/home']" class="group flex transform items-center space-x-2 rounded p-2 text-gray-100 transition-transform duration-200 hover:bg-blue-400 hover:scale-110">
+      <a [routerLink]="['/home']" class="space-x-2 p-2 text-gray-100 group flex transform items-center rounded transition-transform duration-200 hover:bg-blue-400 hover:scale-110">
         <mat-icon class="group-hover:scale-125 transition-transform duration-200">account_circle</mat-icon>
         <span>Profile</span>
       </a>
-      <hr class="border-t border-white p-2">
+      <hr class="border-white p-2 border-t">
 
-      <a [routerLink]="['/home']" class="group flex transform items-center space-x-2 rounded p-2 text-gray-100 transition-transform duration-200 hover:bg-blue-400 hover:scale-110">
+      <a [routerLink]="['/home']" class="space-x-2 p-2 text-gray-100 group flex transform items-center rounded transition-transform duration-200 hover:bg-blue-400 hover:scale-110">
         <mat-icon class="group-hover:scale-125 transition-transform duration-200">settings</mat-icon>
         <span>Settings</span>
       </a>
-      <hr class="border-t border-white p-2">
+      <hr class="border-white p-2 border-t">
     </div>
 
-    <mat-toolbar class="flex justify-end rounded-br-lg rounded-tr-lg p-4">
-      <button mat-raised-button [routerLink]="['/login']" color="warn"> <mat-icon>exit_to_app</mat-icon>Log Out</button>
+    <mat-toolbar class="p-4 flex justify-end rounded-br-lg rounded-tr-lg">
+      <button mat-raised-button [routerLink]="['/login']" color="warn" (click)="logout()"> <mat-icon>exit_to_app</mat-icon>Log Out</button>
     </mat-toolbar>
   </mat-sidenav>
 
-  <mat-sidenav-content class="flex-1 pl-4 pr-4">
+  <mat-sidenav-content class="pl-4 pr-4 flex-1">
     <div class="flex flex-row">
       <button mat-icon-button (click)="sidenav.toggle()">
         <mat-icon>{{ sidenav.opened ? 'list' : 'menu' }}</mat-icon>

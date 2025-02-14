@@ -1,7 +1,6 @@
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
-//import { ActivatedRoute, RouterLink } from '@angular/router';
 import { DialogBoxComponent } from '../../utility/dialog-box/dialog-box.component';
 import { LoginCardComponent } from '../../utility/login-card/login-card.component';
 import { LoginDataService } from '../../dataservice/login.service';
@@ -25,7 +24,7 @@ export class NewUserComponent {
 
   constructor(
     private loginDataService: LoginDataService,
-    //private route: ActivatedRoute
+    
   ) { }
 
   openDialog() {

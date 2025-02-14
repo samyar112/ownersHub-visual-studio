@@ -17,4 +17,8 @@ import { HeaderComponent } from '../home/header/header.component';
 })
 export class HomeComponent {
   title = 'Owners Hub';
+
+  logout() {
+    localStorage.clear();
+  }
 }

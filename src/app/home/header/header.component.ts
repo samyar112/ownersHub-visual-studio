@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
+import { ActivatedRoute } from '@angular/router';
 
 
 @Component({
@@ -13,13 +14,21 @@ import { CommonModule } from '@angular/common';
 })
 export class HeaderComponent {
   isOnline: boolean = navigator.onLine;
+  username: string | null = '';
 
-  constructor(private snackBar: MatSnackBar) { }
+  constructor(
+    private snackBar: MatSnackBar,
+    private route: ActivatedRoute
+  ) { }
 
   ngOnInit() {
     // Listen to online and offline events to update network status
     window.addEventListener('online', this.updateNetworkStatus.bind(this));
     window.addEventListener('offline', this.updateNetworkStatus.bind(this));
+    this.username = localStorage.getItem('username') || '';
+    //this.route.params.subscribe(params => {
+    //  this.username = params['username'];
+    //});
   }
 
   //Update the network status based on the online/offline events

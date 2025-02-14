@@ -21,6 +21,7 @@ import { LoginDataService } from '../dataservice/login.service';
 })
 
 export class LoginComponent {
+  //username: string = '';
   pin: string = '';
   failedAttempts: number = 0;
   maxAttempts: number = 5;
@@ -28,7 +29,6 @@ export class LoginComponent {
   isButtonDisabled: boolean = false;
   isPinInvalid: boolean = false;
   errorMessage: string = '';
-  // Todo: integrate database later
 
   constructor(
     private router: Router,
@@ -38,15 +38,20 @@ export class LoginComponent {
   async onSubmit(pinField: any) {
     pinField.control.markAsTouched();
     const expectedPin = await this.loginDataService.getAllLoginData();
+    //Compare the pin 
     const pinExists = expectedPin.some((user: { pin: string; }) => user.pin === this.pin)
-
     if (pinExists) {
-      this.router.navigate(['/home']);  // Navigate to the home page
+      //Extract the username and emit it. 
+      const matchingUser = expectedPin.find((user: { pin: string; }) => user.pin === this.pin);
+      //this.username = matchingUser; 
+      localStorage.setItem('username', matchingUser.username)
+      this.router.navigate(['/home']);
     } else {
       this.handleIncorrectPin();
+      return;
     }
   }
-
+    
   // Handle incorrect pin error and update the error message
   private handleIncorrectPin() {
     this.isPinInvalid = true;
@@ -71,4 +76,3 @@ export class LoginComponent {
     }
   }
 }
-
