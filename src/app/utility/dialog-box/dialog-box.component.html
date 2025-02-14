@@ -1,9 +1,15 @@
 
-<div class="mx-auto max-w-sm rounded-lg bg-white p-2 shadow-lg">
-    <h2 mat-dialog-title>{{data.title}}</h2>
-    <mat-dialog-content>{{data.content}}</mat-dialog-content>
-    <mat-dialog-actions>
-      <button mat-button mat-dialog-close (click)="onConfirm()">{{data.confirmButtonText}}</button>
-      <button mat-button mat-dialog-close>{{data.closeButtonText}}</button>
-    </mat-dialog-actions>    
+<div class="bg-white p-2 mx-auto max-w-sm rounded-lg shadow-lg">
+  <h2 mat-dialog-title>{{data.title}}</h2>
+  <mat-dialog-content>
+    <strong>
+      {{data.content}}  <br> <br>
+      {{data.description}} <br> <br>
+    </strong>
+    <em>{{data.footer}} </em>
+</mat-dialog-content>
+  <mat-dialog-actions>
+    <button mat-button mat-dialog-close (click)="onConfirm()">{{data.confirmButtonText}}</button>
+    <button mat-button mat-dialog-close>{{data.closeButtonText}}</button>
+  </mat-dialog-actions>
 </div>

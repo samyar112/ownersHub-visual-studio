@@ -20,7 +20,7 @@ export class NewUserComponent {
   readonly dialog = inject(MatDialog);
 
   loginArray: Login[] = []
-  pin!: number;
+  pin!: string;
   username!: string;
 
   constructor(
@@ -36,6 +36,7 @@ export class NewUserComponent {
     const componentInstance = dialogRef.componentInstance as LoginCardComponent;
     if (componentInstance) {
       componentInstance.loginInfo.subscribe(async (loginData: any) => {
+        await this.generateRandomPin()
         this.username = loginData.username;
         const allData = {
           username: loginData.username,
@@ -61,23 +62,23 @@ export class NewUserComponent {
 
     this.dialog.open(DialogBoxComponent, {
       data: {
-        title: 'You are successfully registered',
-        content: `${this.username}, Save this PIN for future use. It will be necessary to access the tool on this machine.`,
-        username: this.username, // Include username
-        pin: this.pin, // Include generated PIN
+        title: 'Registration Successful!',
+        description: `Username: ${this.username}`,
+        content: `Pin: ${this.pin}`,
+        footer: 'Save this PIN for future use. It will be necessary to access the tool on this machine.',
         closeButtonText: 'Close',
-        confirmButtonText: 'Confirm',
+        confirmButtonText: 'Okay',
       },
-      disableClose: true, // Prevent closing when clicking outside
+      disableClose: true
     });
   }
 
-  async generateRandomPin(): Promise<number> {
+  async generateRandomPin(): Promise<string> {
    
 
     // Loop to generate a new pin until it is unique
     do {
-      this.pin = Math.floor(1000 + Math.random() * 9000); // Generate a random 4-digit number
+      this.pin = Math.floor(1000 + Math.random() * 9000).toString(); // Generate a random 4-digit number
 
       // Async check for uniqueness
       // Wrapping the check in a Promise to simulate async behavior

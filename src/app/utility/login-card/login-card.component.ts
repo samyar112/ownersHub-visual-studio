@@ -50,7 +50,7 @@ export class LoginCardComponent {
       const loginData: Login = {
         username: newUsername,
         password: this.userForm.value.password,
-        pin: 0
+        pin: ''
       };
 
       this.snackBar.open('Successfully Registered', 'Close', {

@@ -37,7 +37,6 @@ function handleAddLoginData() {
     }
   });
 }
-
 function handleGetAllLoginData() {
   ipcMain.handle('getAllLoginData', async () => {
     const db = getDb();

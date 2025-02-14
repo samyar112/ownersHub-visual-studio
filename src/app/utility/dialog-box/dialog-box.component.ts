@@ -21,7 +21,9 @@ export class DialogBoxComponent {
   @Output() confirm = new EventEmitter<void>();
   constructor(@Inject(MAT_DIALOG_DATA) public data: {
     title: string,
+    description: string,
     content: string,
+    footer: string,
     closeButtonText: string,
     confirmButtonText: string
   }) { }

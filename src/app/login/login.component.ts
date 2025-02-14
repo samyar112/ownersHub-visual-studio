@@ -9,6 +9,7 @@ import { ErrorMessages } from './../error-messages.enum';
 import { FooterComponent } from './footer/footer.component';
 import { NewUserComponent } from './new-user/new-user.component';
 import { HeaderComponent } from '../home/header/header.component';
+import { LoginDataService } from '../dataservice/login.service';
 
 
 @Component({
@@ -28,14 +29,18 @@ export class LoginComponent {
   isPinInvalid: boolean = false;
   errorMessage: string = '';
   // Todo: integrate database later
-  expectedPin: string = '1234'
 
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private loginDataService: LoginDataService
+  ) { }
 
-   onSubmit(pinField: any) {
+  async onSubmit(pinField: any) {
     pinField.control.markAsTouched();
+    const expectedPin = await this.loginDataService.getAllLoginData();
+    const pinExists = expectedPin.some((user: { pin: string; }) => user.pin === this.pin)
 
-    if (this.pin === this.expectedPin) {
+    if (pinExists) {
       this.router.navigate(['/home']);  // Navigate to the home page
     } else {
       this.handleIncorrectPin();
