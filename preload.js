@@ -5,7 +5,7 @@ contextBridge.exposeInMainWorld('electron', {
  
   // Login Table
   addLoginData: (data) => ipcRenderer.invoke('addLoginData', data),
-  getAllLoginData: () => ipcRenderer.invoke('getAllLoginData'),
+  getAllLoginData: (pin) => ipcRenderer.invoke('getAllLoginData', {pin}),
 
   // Owners Table
   addOwnersData: (data) => ipcRenderer.invoke('addOwnersData', data),

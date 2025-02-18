@@ -21,7 +21,7 @@ import { LoginDataService } from '../dataservice/login.service';
 })
 
 export class LoginComponent {
-  //username: string = '';
+  username: string = '';
   pin: string = '';
   failedAttempts: number = 0;
   maxAttempts: number = 5;
@@ -37,14 +37,10 @@ export class LoginComponent {
 
   async onSubmit(pinField: any) {
     pinField.control.markAsTouched();
-    const expectedPin = await this.loginDataService.getAllLoginData();
-    //Compare the pin 
-    const pinExists = expectedPin.some((user: { pin: string; }) => user.pin === this.pin)
-    if (pinExists) {
-      //Extract the username and emit it. 
-      const matchingUser = expectedPin.find((user: { pin: string; }) => user.pin === this.pin);
-      //this.username = matchingUser; 
-      localStorage.setItem('username', matchingUser.username)
+    const result = await this.loginDataService.getAllLoginData(this.pin);
+    if (result.success) {
+      this.username = result.username;
+      localStorage.setItem('username', this.username)
       this.router.navigate(['/home']);
     } else {
       this.handleIncorrectPin();

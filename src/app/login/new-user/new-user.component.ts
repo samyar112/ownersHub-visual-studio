@@ -35,7 +35,7 @@ export class NewUserComponent {
     const componentInstance = dialogRef.componentInstance as LoginCardComponent;
     if (componentInstance) {
       componentInstance.loginInfo.subscribe(async (loginData: any) => {
-        await this.generateRandomPin()
+        await this.generateUniquePin()
         this.username = loginData.username;
         const allData = {
           username: loginData.username,
@@ -53,10 +53,6 @@ export class NewUserComponent {
     }
   }
 
-  async getAllLoginInfo() {
-   this.loginArray = await this.loginDataService.getAllLoginData()
-  }
-
   async openPinDialogBox() {
 
     this.dialog.open(DialogBoxComponent, {
@@ -72,19 +68,28 @@ export class NewUserComponent {
     });
   }
 
-  async generateRandomPin(): Promise<string> {
-   
+  async generateUniquePin(): Promise<string> {
+    let newPin;
+    let attempts = 0;
+    const maxAttempts = 50;
 
-    // Loop to generate a new pin until it is unique
     do {
-      this.pin = Math.floor(1000 + Math.random() * 9000).toString(); // Generate a random 4-digit number
+      // Generate a 4-digit PIN
+      newPin = Math.floor(1000 + Math.random() * 9000).toString(); 
+      attempts++;
 
-      // Async check for uniqueness
-      // Wrapping the check in a Promise to simulate async behavior
-      await new Promise(resolve => setTimeout(resolve, 0)); // Simulate async behavior (this can be replaced with an actual async task)
+      // Check if the PIN exists in the database
+      const response = await this.loginDataService.getAllLoginData(newPin);
 
-    } while (this.loginArray.some(user => user.pin === this.pin)); // Check if the generated PIN already exists
+      if (!response.success) {
+        this.pin = newPin;
+        return this.pin; 
+      }
 
-    return this.pin;
+      if (attempts >= maxAttempts) {
+        throw new Error("Unable to generate a unique PIN. Try again.");
+      }
+
+    } while (true);
   }
 }

@@ -23,7 +23,10 @@ export class LoginCardComponent {
   @Output() loginInfo = new EventEmitter<any>();
   userForm: FormGroup;
   isFormSubmitted: boolean = false;
-  loginArray:Login[] = []
+  loginArray: Login[] = []
+  pin: string = ''
+  usernameExists: boolean = false;
+  
   constructor(
     private loginService: LoginDataService,
     private snackBar: MatSnackBar
@@ -38,17 +41,18 @@ export class LoginCardComponent {
   async onSubmit() {
    this.isFormSubmitted = true;
    if (this.userForm.valid) {
-     this.loginArray = await this.loginService.getAllLoginData();
+     const result = await this.loginService.getAllLoginData(this.pin);
+     this.loginArray = result;
 
      const newUsername = this.userForm.value.username;
      // Iterate through the array of usernames
-     const usernameExists = this.loginArray.some(user => user.username === newUsername)
+     const usernameExists = this.loginArray.some(user => user === newUsername);
      if (usernameExists) {
        this.userForm.controls['username'].setErrors({ usernameTaken: true });
        return;
      }
       const loginData: Login = {
-        username: newUsername,
+        username: newUsername.trim().toLowerCase(),
         password: this.userForm.value.password,
         pin: ''
       };
@@ -60,5 +64,4 @@ export class LoginCardComponent {
       this.loginInfo.emit(loginData);
     }
   }
-
 }
