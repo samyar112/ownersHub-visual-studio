@@ -7,6 +7,11 @@
     </figcaption>
   </figure>
   <div class="space-x-2 flex items-center">
+    <button *ngIf="router.url === '/idle-screen'" class="space-x-2 flex items-center" (click)="logout()">
+      <mat-icon>exit_to_app</mat-icon>
+      <span>Log Out</span>
+    </button>
+
     <mat-icon>{{ isOnline ? 'wifi' : 'close' }}</mat-icon>
     <span>{{ isOnline ? 'Online' : 'Offline' }}</span>
   </div>

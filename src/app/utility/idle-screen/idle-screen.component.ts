@@ -28,7 +28,7 @@ export class IdleScreenComponent {
   errorMessage: string = '';
 
   constructor(
-    private router: Router,
+    public router: Router,
     private loginDataService: LoginDataService
   ) { }
 

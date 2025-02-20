@@ -35,6 +35,11 @@ export class LoginComponent {
     private loginDataService: LoginDataService
   ) { }
 
+
+  ngOnInit() {
+    localStorage.clear();
+  }
+
   async onSubmit(pinField: any) {
     pinField.control.markAsTouched();
     const result = await this.loginDataService.getAllLoginData(this.pin);

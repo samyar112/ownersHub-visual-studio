@@ -4,35 +4,46 @@ import { Injectable } from '@angular/core';
   providedIn: 'root'
 })
 export class IdleService {
-  constructor() { }
+  private time: number = 0;
+  private interval: any;
+  private running: boolean = false;
+  private idleTimeout: number = 10000; // 10 seconds before executing callback
+  private idleTimer: any; // Reference for idle timeout
 
-  private idleTimeout: number = 10 * 1000;
-  //private idleTimeout: number = 5 * 60 * 1000;
-  private timeoutHandle: any;
-  private events: string[] = ['mousemove', 'keydown', 'click', 'touchstart'];
+  // Events that detect user activity
+  private userActivityEvents = ['mousemove', 'keydown', 'touchstart', 'click'];
 
-  startWatching(idleCallback: () => void) {
-    this.resetTimer(idleCallback);
-
-    // Listen for user activity
-    this.events.forEach(event => {
-      document.addEventListener(event, () => this.resetTimer(idleCallback));
+  constructor() {
+    this.addEventListeners();
+  }
+  //track user activity
+  private addEventListeners() {
+    this.userActivityEvents.forEach(event => {
+      window.addEventListener(event, () => this.stopTimer());
     });
   }
 
-  private resetTimer(idleCallback: () => void) {
-    clearTimeout(this.timeoutHandle); 
+  // Start the idle timer and execute the callback after the timeout
+  startTimer(callback: () => void) {
+    clearTimeout(this.idleTimer);
 
-    // Start a new countdown
-    this.timeoutHandle = setTimeout(() => {
-      idleCallback(); 
+    this.idleTimer = setTimeout(() => {
+      if (!this.running) {
+        this.running = true;
+        this.interval = setInterval(() => {
+          this.time++;
+        }, 1000);
+
+        // Execute callback function after timeout
+        callback();
+      }
     }, this.idleTimeout);
   }
 
-  stopWatching() {
-    clearTimeout(this.timeoutHandle); 
-    this.events.forEach(event => {
-      document.removeEventListener(event, () => this.resetTimer(() => { }));
-    });
+  stopTimer() {
+    this.running = false;
+    clearInterval(this.interval);
+    clearTimeout(this.idleTimer);
+   
   }
 }

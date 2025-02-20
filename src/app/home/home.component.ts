@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { Router, RouterLink } from '@angular/router';
@@ -17,9 +17,8 @@ import { MatSnackBar } from '@angular/material/snack-bar'
   templateUrl: './home.component.html',
   styleUrl: './home.component.css'
 })
-export class HomeComponent {
+export class HomeComponent implements OnInit, OnDestroy {
   title = 'Owners Hub';
-
   constructor(
     private idleService: IdleService,
     private router: Router,
@@ -27,21 +26,17 @@ export class HomeComponent {
   ) { }
 
   ngOnInit() {
-    this.idleService.startWatching(() => this.logoutUser());
+    this.idleService.startTimer(() => this.logoutUser());
   }
 
   logoutUser() {
-    this.snackBar.open('You were idle for too long. Logging out...','Close', {
+    this.snackBar.open('You were idle for too long. Logging out...', 'Close', {
       duration: 5000
     });
     this.router.navigate(['/idle-screen']);
   }
 
   ngOnDestroy() {
-    this.idleService.stopWatching();
-  }
-
-  logout() {
-    localStorage.clear();
+    this.idleService.stopTimer();
   }
 }

@@ -22,6 +22,7 @@ import { LoginDataService } from '../../dataservice/login.service';
 export class LoginCardComponent {
   @Output() loginInfo = new EventEmitter<any>();
   userForm: FormGroup;
+  isOldUser: Boolean = false;
   isFormSubmitted: boolean = false;
   loginArray: Login[] = []
   pin: string = ''
@@ -48,7 +49,9 @@ export class LoginCardComponent {
      // Iterate through the array of usernames
      const usernameExists = this.loginArray.some(user => user === newUsername);
      if (usernameExists) {
-       this.userForm.controls['username'].setErrors({ usernameTaken: true });
+       if (!this.isOldUser) {
+         this.userForm.controls['username'].setErrors({ usernameTaken: true });
+       }
        return;
      }
       const loginData: Login = {

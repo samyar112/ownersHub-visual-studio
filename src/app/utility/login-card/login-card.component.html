@@ -1,5 +1,5 @@
 <mat-card class="mat-elevation-z8 border-gray-300 bg-white p-4 mx-auto border shadow-lg">
-  <mat-card-title class="mb-4 pb-4 text-xl font-semibold">Register to generate a PIN.</mat-card-title>
+  <mat-card-title class="mb-4 pb-4 text-xl font-semibold"> {{isOldUser ? 'Enter your existing Credentials': 'Register to generate a PIN.' }}</mat-card-title>
   <hr>
   <mat-card-content>
     <form [formGroup]="userForm">

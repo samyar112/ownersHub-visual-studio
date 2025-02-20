@@ -1,4 +1,4 @@
-﻿<app-header></app-header>
+<app-header></app-header>
 
 <mat-sidenav-container [style.height]="'850px'" class="mb-10 mr-10 mt-2 flex w-full flex-row">
   <mat-sidenav class="flex flex-col" mode="side" #sidenav [style.width]="'14rem'"  opened>
@@ -24,7 +24,7 @@
     </div>
 
     <mat-toolbar class="p-4 flex justify-end rounded-br-lg rounded-tr-lg">
-      <button mat-raised-button [routerLink]="['/login']" color="warn" (click)="logout()"> <mat-icon>exit_to_app</mat-icon>Log Out</button>
+      <button mat-raised-button [routerLink]="['/login']" color="warn"> <mat-icon>exit_to_app</mat-icon>Log Out</button>
     </mat-toolbar>
   </mat-sidenav>
 

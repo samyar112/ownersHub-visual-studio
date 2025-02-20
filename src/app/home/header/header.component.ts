@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute } from '@angular/router';
+import { Router } from '@angular/router';
 
 
 @Component({
@@ -18,7 +18,7 @@ export class HeaderComponent {
 
   constructor(
     private snackBar: MatSnackBar,
-    private route: ActivatedRoute
+    public router: Router
   ) { }
 
   ngOnInit() {
@@ -37,17 +37,21 @@ export class HeaderComponent {
     this.onlineSnackbar();
   }
 
+  logout() {
+    this.router.navigate(['/login']);
+    localStorage.clear();
+  }
+
+
+
   private onlineSnackbar() {
     if (this.isOnline == true) {
       this.snackBar.open('Connected to the internet', 'Close', {
         duration: 4000,
-
-        panelClass: ['green-snackbar']
       });
     } else {
       this.snackBar.open('Not connected to the internet', 'Close', {
         duration: 4000,
-        panelClass: ['red-snackbar']
       });
     }
   }
