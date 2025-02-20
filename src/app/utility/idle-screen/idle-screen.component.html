@@ -1,0 +1,28 @@
+﻿<app-header></app-header>
+<main class="bg-gray-100 flex items-center justify-center">
+  <div class="space-x-6 flex">
+    <!-- First Aside Section -->
+    <section class="mx-20 space-y-4 bg-white p-10 flex flex-col items-center">
+      <figure>
+        <img class="mx-auto flex items-center rounded-full object-cover object-center" alt="login" width="300" height="250" src="assets/login.jpg">
+      </figure>
+
+      <h2 class="mb-4 text-gray-900 text-center">Sign back-In</h2>
+      <p>You've been logged out due to inactivity.</p>
+      <mat-form-field appearance="outline" class="w-full">
+        <input matInput type="password" [(ngModel)]="pin" #pinField="ngModel" name="pin" required maxlength="4" placeholder="Enter a 4-digit Pin*">
+        <!-- Display error if Pin is empty -->
+        <mat-error *ngIf="pinField.invalid && pinField.touched">{{ errorMessage }}</mat-error>
+
+      </mat-form-field>
+
+      <button mat-flat-button color="primary"
+              class="px-3 py-2 w-full rounded"
+              [disabled]="isButtonDisabled"
+              (click)="onSubmit(pinField)">
+        Submit
+      </button>
+    </section>
+    <hr>
+  </div>
+</main>

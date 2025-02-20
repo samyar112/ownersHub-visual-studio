@@ -5,6 +5,7 @@ import { HomeComponent } from './home/home.component';
 import { DetailsComponent } from './home/details/details.component';
 import { FileUploadCardComponent } from './utility/file-upload-card/file-upload-card.component';
 import { ViewFilesComponent } from './home/details/view-files/view-files.component';
+import { IdleScreenComponent } from './utility/idle-screen/idle-screen.component';
 
 const routes: Routes = [
   { 'path': '', component: LoginComponent },
@@ -13,7 +14,9 @@ const routes: Routes = [
   { 'path': 'new-owner', component: DetailsComponent },
   { 'path': 'new-owner/:id', component: DetailsComponent },
   { 'path': 'file-upload', component: FileUploadCardComponent },
-  { 'path': 'view-files/:id', component: ViewFilesComponent}];
+  { 'path': 'view-files/:id', component: ViewFilesComponent },
+  { 'path': 'idle-screen', component: IdleScreenComponent }
+];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],

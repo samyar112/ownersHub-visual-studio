@@ -1,12 +1,14 @@
 import { Component } from '@angular/core';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { HeaderComponent } from '../home/header/header.component';
+import { IdleService } from '../utility/idle-screen/idle.service';
+import { MatSnackBar } from '@angular/material/snack-bar'
 
 @Component({
   selector: 'app-home',
@@ -17,6 +19,27 @@ import { HeaderComponent } from '../home/header/header.component';
 })
 export class HomeComponent {
   title = 'Owners Hub';
+
+  constructor(
+    private idleService: IdleService,
+    private router: Router,
+    private snackBar: MatSnackBar
+  ) { }
+
+  ngOnInit() {
+    this.idleService.startWatching(() => this.logoutUser());
+  }
+
+  logoutUser() {
+    this.snackBar.open('You were idle for too long. Logging out...','Close', {
+      duration: 5000
+    });
+    this.router.navigate(['/idle-screen']);
+  }
+
+  ngOnDestroy() {
+    this.idleService.stopWatching();
+  }
 
   logout() {
     localStorage.clear();
