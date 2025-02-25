@@ -1,49 +1,53 @@
 import { Injectable } from '@angular/core';
+import { Router, NavigationEnd } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
 })
 export class IdleService {
-  private time: number = 0;
-  private interval: any;
-  private running: boolean = false;
-  private idleTimeout: number = 10000; // 10 seconds before executing callback
-  private idleTimer: any; // Reference for idle timeout
 
-  // Events that detect user activity
-  private userActivityEvents = ['mousemove', 'keydown', 'touchstart', 'click'];
 
-  constructor() {
-    this.addEventListeners();
-  }
-  //track user activity
-  private addEventListeners() {
-    this.userActivityEvents.forEach(event => {
-      window.addEventListener(event, () => this.stopTimer());
+  private idleTimeout: number = 5 * 1000;
+  //private idleTimeout: number = 5 * 60 * 1000;
+  private timeoutHandle: any;
+  private events: string[] = ['mousemove', 'keydown', 'click', 'touchstart'];
+  private isIdleScreen = false;
+
+
+  constructor(private router: Router) {
+    this.router.events.subscribe(event => {
+      if (event instanceof NavigationEnd) {
+        this.isIdleScreen = event.url === '/idle-screen' || event.url === '/login';
+      }
     });
   }
 
-  // Start the idle timer and execute the callback after the timeout
-  startTimer(callback: () => void) {
-    clearTimeout(this.idleTimer);
 
-    this.idleTimer = setTimeout(() => {
-      if (!this.running) {
-        this.running = true;
-        this.interval = setInterval(() => {
-          this.time++;
-        }, 1000);
+  startWatching(idleCallback: () => void) {
+    this.resetTimer(idleCallback);
 
-        // Execute callback function after timeout
-        callback();
-      }
+    // Listen for user activity
+    this.events.forEach(event => {
+      document.addEventListener(event, () => this.resetTimer(idleCallback));
+    });
+  }
+
+  private resetTimer(idleCallback: () => void) {
+    if (this.isIdleScreen) {
+      return; // ✅ Stop resetting the timer when on idle screen or login
+    }
+    clearTimeout(this.timeoutHandle);
+
+    // Start a new countdown
+    this.timeoutHandle = setTimeout(() => {
+      idleCallback();
     }, this.idleTimeout);
   }
 
-  stopTimer() {
-    this.running = false;
-    clearInterval(this.interval);
-    clearTimeout(this.idleTimer);
-   
+  stopWatching() {
+    clearTimeout(this.timeoutHandle);
+    this.events.forEach(event => {
+      document.removeEventListener(event, () => this.resetTimer(() => { }));
+    });
   }
 }

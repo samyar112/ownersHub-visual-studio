@@ -73,6 +73,7 @@ export class DashboardComponent implements OnInit {
     const dialogRef = this.dialog.open(DialogBoxComponent, {
       data: {
         title: 'Confirm Deletion?',
+        description: `Owner Name: ${ownerData.ownerName}`,
         content: 'Please confirm if you want to proceed with delete action.',
         closeButtonText: 'Close',
         confirmButtonText: 'Confirm',
