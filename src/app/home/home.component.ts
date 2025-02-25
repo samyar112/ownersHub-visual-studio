@@ -4,6 +4,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { Router, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatDialog } from '@angular/material/dialog';
 import { CommonModule } from '@angular/common';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { HeaderComponent } from '../home/header/header.component';
@@ -23,6 +24,7 @@ export class HomeComponent implements OnInit {
     private idleService: IdleService,
     private router: Router,
     private snackBar: MatSnackBar,
+    private dialog: MatDialog
   ) { }
 
   ngOnInit() {
@@ -33,6 +35,7 @@ export class HomeComponent implements OnInit {
     this.snackBar.open('You were idle for too long. Logging out...', 'Close', {
       duration: 5000
     });
+    this.dialog.closeAll;
     this.router.navigate(['/idle-screen']);
   }
 

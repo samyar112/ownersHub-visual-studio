@@ -42,7 +42,10 @@ export class IdleScreenComponent {
       } else {
         this.handleIncorrectPin();
         return;
-      } 
+      }
+    } else {
+      this.handleIncorrectPin();
+      return;
     }
   }
 

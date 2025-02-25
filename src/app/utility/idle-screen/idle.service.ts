@@ -8,7 +8,7 @@ import { MatDialog } from '@angular/material/dialog';
 export class IdleService {
 
 
-  private idleTimeout: number = 5 * 1000;
+  private idleTimeout: number = 20 * 1000;
   //private idleTimeout: number = 5 * 60 * 1000;
   private timeoutHandle: any;
   private events: string[] = ['mousemove', 'keydown', 'click', 'touchstart'];
@@ -50,9 +50,11 @@ export class IdleService {
 
   stopWatching() {
     clearTimeout(this.timeoutHandle);
-    this.events.forEach(event => {
-      document.removeEventListener(event, () => this.resetTimer(() => { }));
-      this.dialog.closeAll();
-    });
+    if (!this.isIdleScreen) {
+      this.events.forEach(event => {
+        document.removeEventListener(event, () => this.resetTimer(() => { }));
+        this.dialog.closeAll();
+      });
+    }
   }
 }
