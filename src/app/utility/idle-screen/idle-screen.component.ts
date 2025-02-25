@@ -35,13 +35,14 @@ export class IdleScreenComponent {
   async onSubmit(pinField: any) {
     pinField.control.markAsTouched();
     const result = await this.loginDataService.getAllLoginData(this.pin);
+    const loggedoutUser = localStorage.getItem('username');
     if (result.success) {
-      this.username = result.username;
-      localStorage.setItem('username', this.username)
-      this.router.navigate(['/home']);
-    } else {
-      this.handleIncorrectPin();
-      return;
+      if (result.username === loggedoutUser) {
+        this.router.navigate(['/home']);
+      } else {
+        this.handleIncorrectPin();
+        return;
+      } 
     }
   }
 

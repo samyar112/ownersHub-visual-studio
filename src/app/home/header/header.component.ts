@@ -26,9 +26,6 @@ export class HeaderComponent {
     window.addEventListener('online', this.updateNetworkStatus.bind(this));
     window.addEventListener('offline', this.updateNetworkStatus.bind(this));
     this.username = localStorage.getItem('username') || '';
-    //this.route.params.subscribe(params => {
-    //  this.username = params['username'];
-    //});
   }
 
   //Update the network status based on the online/offline events

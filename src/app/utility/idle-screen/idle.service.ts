@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +15,10 @@ export class IdleService {
   private isIdleScreen = false;
 
 
-  constructor(private router: Router) {
+  constructor(
+    private router: Router,
+    private dialog: MatDialog
+  ) {
     this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
         this.isIdleScreen = event.url === '/idle-screen' || event.url === '/login';
@@ -48,6 +52,7 @@ export class IdleService {
     clearTimeout(this.timeoutHandle);
     this.events.forEach(event => {
       document.removeEventListener(event, () => this.resetTimer(() => { }));
+      this.dialog.closeAll();
     });
   }
 }
