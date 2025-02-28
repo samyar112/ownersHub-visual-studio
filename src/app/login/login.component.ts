@@ -4,6 +4,7 @@ import { MatInputModule } from '@angular/material/input';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Router } from '@angular/router';
 import { ErrorMessages } from './../error-messages.enum';
 import { FooterComponent } from './footer/footer.component';
@@ -15,7 +16,7 @@ import { LoginDataService } from '../dataservice/login.service';
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, MatFormFieldModule, FormsModule, MatButtonModule, MatInputModule, HeaderComponent, FooterComponent, NewUserComponent],
+  imports: [CommonModule, MatFormFieldModule, MatProgressSpinnerModule, FormsModule, MatButtonModule, MatInputModule, HeaderComponent, FooterComponent, NewUserComponent],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
 })
@@ -29,6 +30,7 @@ export class LoginComponent {
   isButtonDisabled: boolean = false;
   isPinInvalid: boolean = false;
   errorMessage: string = '';
+  isUploading: boolean = false;
 
   constructor(
     private router: Router,
@@ -41,13 +43,17 @@ export class LoginComponent {
   }
 
   async onSubmit(pinField: any) {
+    this.isUploading = true;
     pinField.control.markAsTouched();
     const result = await this.loginDataService.getAllLoginData(this.pin);
+    this.isUploading = false;
     if (result.success) {
       this.username = result.username;
       localStorage.setItem('username', this.username)
+      
       this.router.navigate(['/home']);
     } else {
+      
       this.handleIncorrectPin();
       return;
     }
@@ -55,6 +61,7 @@ export class LoginComponent {
     
   // Handle incorrect pin error and update the error message
   private handleIncorrectPin() {
+    
     this.isPinInvalid = true;
     this.failedAttempts++;
       this.remainingAttempts = this.maxAttempts - this.failedAttempts;

@@ -12,32 +12,50 @@ function registerLoginIPCHandlers() {
 
 function handleAddLoginData() {
   ipcMain.handle('addLoginData', async (event, data) => {
-    const db = getDb();
-    const insertQuery = `
-      INSERT INTO login (username, password, pin)
-      VALUES (?, ?, ?)
-    `;
+    const db = getDb(); // Open database connection
+
     try {
-      const hashedPassword = await bcrypt.hash(data.password, saltRounds);
-      const hashedPin = await bcrypt.hash(data.pin, saltRounds);
-      const result = await new Promise((resolve, reject) => {
-        db.run(insertQuery, [
-          data.username,
-          hashedPassword,
-          hashedPin
-        ], function (err) {
+      if (!data || !data.username || !data.password || !data.pin) {
+        throw new Error("Missing required parameters: username, password, or pin");
+      }
+
+
+      // Hash password and pin before storing
+      const hashedPassword = await bcrypt.hash(String(data.password), saltRounds);
+      const hashedPin = await bcrypt.hash(String(data.pin), saltRounds);
+
+      // Insert new parameters into _tblProcessParameter
+      await new Promise((resolve, reject) => {
+        db.run(
+          "INSERT INTO _tblProcessParameter (name, value) VALUES ('username', ?), ('password', ?), ('pin', ?)",
+          [String(data.username), String(hashedPassword), String(hashedPin)], // Ensure all values are strings
+          (err) => {
+            if (err) {
+              console.error(" Error inserting parameters:", err.message);
+              reject(new Error("Error inserting parameters: " + err.message));
+            } else {
+              resolve();
+            }
+          }
+        );
+      });
+
+      // Activate the trigger by setting Login_Insert = 1
+      await new Promise((resolve, reject) => {
+        db.run("UPDATE _tblProcessEvent SET Login_Insert = 1 WHERE id = 1", (err) => {
           if (err) {
-            reject(new Error('Error adding data: ' + err.message));
+            console.error("Error updating trigger flag:", err.message);
+            reject(new Error("Error updating trigger flag: " + err.message));
           } else {
-            resolve('Data added successfully with ID: ' + this.lastID);
+            resolve({ message: "User login insertion triggered successfully." });
           }
         });
       });
-      db.close();
-      return result;
     } catch (error) {
+      console.error("Error processing login data:", error.message);
+      return { error: error.message };
+    } finally {
       db.close();
-      throw error;
     }
   });
 }
