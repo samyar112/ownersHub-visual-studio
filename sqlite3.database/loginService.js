@@ -12,23 +12,24 @@ function registerLoginIPCHandlers() {
 
 function handleAddLoginData() {
   ipcMain.handle('addLoginData', async (event, data) => {
-    const db = getDb(); // Open database connection
+    const db = getDb();
 
     try {
       if (!data || !data.username || !data.password || !data.pin) {
         throw new Error("Missing required parameters: username, password, or pin");
       }
-
-
       // Hash password and pin before storing
-      const hashedPassword = await bcrypt.hash(String(data.password), saltRounds);
-      const hashedPin = await bcrypt.hash(String(data.pin), saltRounds);
-
+      const hashedPassword = await bcrypt.hash(data.password, saltRounds);
+      const hashedPin = await bcrypt.hash(data.pin, saltRounds);
       // Insert new parameters into _tblProcessParameter
       await new Promise((resolve, reject) => {
-        db.run(
-          "INSERT INTO _tblProcessParameter (name, value) VALUES ('username', ?), ('password', ?), ('pin', ?)",
-          [String(data.username), String(hashedPassword), String(hashedPin)], // Ensure all values are strings
+      const query = "INSERT INTO _tblProcessParameter (name, value) VALUES ('username', ?), ('password', ?), ('pin', ?)"
+        db.run
+          ( query,
+            [ data.username,
+              hashedPassword,
+              hashedPin
+            ], 
           (err) => {
             if (err) {
               console.error(" Error inserting parameters:", err.message);
@@ -42,7 +43,8 @@ function handleAddLoginData() {
 
       // Activate the trigger by setting Login_Insert = 1
       await new Promise((resolve, reject) => {
-        db.run("UPDATE _tblProcessEvent SET Login_Insert = 1 WHERE id = 1", (err) => {
+        const query = "UPDATE _tblProcessEvent SET Login_Insert = 1 WHERE id = 1"
+        db.run(query, (err) => {
           if (err) {
             console.error("Error updating trigger flag:", err.message);
             reject(new Error("Error updating trigger flag: " + err.message));
@@ -59,7 +61,6 @@ function handleAddLoginData() {
     }
   });
 }
-
 function handleGetAllLoginData() {
   ipcMain.handle('getAllLoginData', async (event, { pin }) => {
     const db = getDb();

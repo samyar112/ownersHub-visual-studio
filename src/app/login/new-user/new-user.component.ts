@@ -21,14 +21,19 @@ export class NewUserComponent {
   loginArray: Login[] = []
   pin!: string;
   username!: string;
+  isExistingUser: boolean = true
 
   constructor(
     private loginDataService: LoginDataService,
     
   ) { }
 
-  openDialog() {
+  openDialog(isExistingUser: boolean) {
+    //const isExistingUser: boolean = true; 
     const dialogRef = this.dialog.open(LoginCardComponent, {
+      data: {
+        title: isExistingUser ? 'Enter your existing Username and Password' : 'Register to generate a PIN'
+      },
       disableClose: true
     });
 
@@ -53,8 +58,7 @@ export class NewUserComponent {
     }
   }
 
-  async openPinDialogBox() {
-
+  openPinDialogBox() {
     this.dialog.open(DialogBoxComponent, {
       data: {
         title: 'Registration Successful!',
@@ -72,7 +76,6 @@ export class NewUserComponent {
     let newPin;
     let attempts = 0;
     const maxAttempts = 50;
-
     do {
       // Generate a 4-digit PIN
       newPin = Math.floor(1000 + Math.random() * 9000).toString(); 

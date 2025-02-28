@@ -1,4 +1,4 @@
-import { Component, Output, EventEmitter } from '@angular/core';
+import { Component, Inject, Output, EventEmitter } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { FormControl, Validators, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatCardModule, } from '@angular/material/card';
@@ -7,6 +7,7 @@ import { MatInputModule } from '@angular/material/input';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialogClose } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Login } from '../../model/login';
 import { LoginDataService } from '../../dataservice/login.service';
@@ -30,7 +31,11 @@ export class LoginCardComponent {
   
   constructor(
     private loginService: LoginDataService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    @Inject(MAT_DIALOG_DATA) public data: {
+      title: string
+    }
+
   ) {
     this.userForm = new FormGroup({
      
