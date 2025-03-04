@@ -28,11 +28,11 @@ export class NewUserComponent {
     
   ) { }
 
-  openDialog(isExistingUser: boolean) {
+  openDialog(mode: 'newUser' | 'forgotPin') {
     //const isExistingUser: boolean = true; 
     const dialogRef = this.dialog.open(LoginCardComponent, {
       data: {
-        title: isExistingUser ? 'Enter your existing Username and Password' : 'Register to generate a PIN'
+        mode
       },
       disableClose: true
     });
@@ -40,10 +40,14 @@ export class NewUserComponent {
     const componentInstance = dialogRef.componentInstance as LoginCardComponent;
     if (componentInstance) {
       componentInstance.loginInfo.subscribe(async (loginData: any) => {
-        await this.generateUniquePin()
+        if (mode === 'forgotPin') {
+
+
+        }
+        await this.generateUniquePin();
         this.username = loginData.username;
         const allData = {
-          username: loginData.username,
+          username: this.username,
           password: loginData.password,
           pin: this.pin
         };
@@ -92,7 +96,6 @@ export class NewUserComponent {
       if (attempts >= maxAttempts) {
         throw new Error("Unable to generate a unique PIN. Try again.");
       }
-
     } while (true);
   }
 }

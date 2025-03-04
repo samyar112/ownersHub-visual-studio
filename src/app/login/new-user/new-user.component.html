@@ -1,4 +1,4 @@
-﻿<section class="bg-white-100 p-4 rounded" style="flex-basis: 60%">
+<section class="bg-white-100 p-4 rounded" style="flex-basis: 60%">
   <h2 class="mb-6 leading-relaxed">About</h2>
   <p class="mb-6 leading-relaxed"> Owners Management Hub provides a secure and user-friendly access point for authorized users to log into the system. Designed with simplicity and security in mind, this page ensures that only authorized personnel can access sensitive owner management data.</p>
   <hr class="mb-2">
@@ -11,14 +11,14 @@
   </ol>
   <hr class="mb-2">
   <div class="space-x-2 item-center flex flex-row">
-    <button mat-button style="color: black; border-bottom: 2px solid orange;" (click)="openDialog(isExistingUser)">
+    <button mat-button style="color: black; border-bottom: 2px solid orange;" (click)="openDialog('forgotPin')">
       Click Here
     </button>  <span class="text-sm">Forgot the PIN?</span>
   </div>
   <hr class="mb-2">
   <h3> New User?</h3>
   <div class="space-x-2 flex flex-row">
-    <button mat-button style="background-color: orange; color: black;" (click)="openDialog(!isExistingUser)">
+    <button mat-button style="background-color: orange; color: black;" (click)="openDialog('newUser')">
       Click Here
     </button>
     <p class="text-gray-500 text-sm"></p>if you are accessing this tool for the first time.

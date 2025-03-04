@@ -1,5 +1,5 @@
 <mat-card class="mat-elevation-z8 border-gray-300 bg-white p-4 mx-auto border shadow-lg">
-  <mat-card-title class="mb-4 pb-4 text-xl font-semibold"> {{ data.title }}</mat-card-title>
+  <mat-card-title class="mb-4 pb-4 text-xl font-semibold"> {{ mode === 'newUser' ? 'Register to generate a PIN' : 'Enter your existing Username and Password' }}</mat-card-title>
   <hr>
   <mat-card-content>
     <form [formGroup]="userForm">
@@ -13,6 +13,9 @@
         </mat-error>
         <mat-error *ngIf="userForm.controls['username'].hasError('usernameTaken')">
           Username is already taken. Please choose a different username.
+        </mat-error>
+        <mat-error *ngIf="userForm.controls['username'].hasError('validUsername')">
+          Enter your valid username!
         </mat-error>
       </mat-form-field>
 

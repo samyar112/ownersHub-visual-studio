@@ -22,8 +22,9 @@ import { LoginDataService } from '../../dataservice/login.service';
 })
 export class LoginCardComponent {
   @Output() loginInfo = new EventEmitter<any>();
+  mode: 'newUser' | 'forgotPin';
   userForm: FormGroup;
-  isOldUser: Boolean = false;
+  isNewUser: Boolean = false;
   isFormSubmitted: boolean = false;
   loginArray: Login[] = []
   pin: string = ''
@@ -33,10 +34,11 @@ export class LoginCardComponent {
     private loginService: LoginDataService,
     private snackBar: MatSnackBar,
     @Inject(MAT_DIALOG_DATA) public data: {
-      title: string
+      mode: 'newUser' | 'forgotPin'
     }
 
   ) {
+    this.mode = data.mode;
     this.userForm = new FormGroup({
      
       username: new FormControl('', [Validators.required]),
@@ -53,12 +55,16 @@ export class LoginCardComponent {
      const newUsername = this.userForm.value.username;
      // Iterate through the array of usernames
      const usernameExists = this.loginArray.some(user => user === newUsername);
-     if (usernameExists) {
-       if (!this.isOldUser) {
+     
+     if (usernameExists && this.mode === 'newUser') {
          this.userForm.controls['username'].setErrors({ usernameTaken: true });
-       }
        return;
      }
+     if (!usernameExists && this.mode === 'forgotPin') {
+       this.userForm.controls['username'].setErrors({ validUsername: true });
+       return;
+     }
+
       const loginData: Login = {
         username: newUsername.trim().toLowerCase(),
         password: this.userForm.value.password,
