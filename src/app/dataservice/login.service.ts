@@ -7,8 +7,8 @@ import { Login } from '../model/login';
 export class LoginDataService {
   constructor() { }
 
-  addLoginData(data: Login) {
-    return (window as any).electron.addLoginData(data);
+  loginData(data: Login) {
+    return (window as any).electron.loginData(data);
   }
 
   getAllLoginData(pin: string) {

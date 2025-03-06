@@ -28,8 +28,7 @@ export class NewUserComponent {
     
   ) { }
 
-  openDialog(mode: 'newUser' | 'forgotPin') {
-    //const isExistingUser: boolean = true; 
+  openDialog(mode: 'newUser' | 'forgotPin') { 
     const dialogRef = this.dialog.open(LoginCardComponent, {
       data: {
         mode
@@ -52,7 +51,7 @@ export class NewUserComponent {
           pin: this.pin
         };
         try {
-          await this.loginDataService.addLoginData(allData);
+          await this.loginDataService.loginData(allData);
           dialogRef.close();
           this.openPinDialogBox()  
         } catch (error) {

@@ -6,13 +6,13 @@ const saltRounds = 10;
 
 module.exports = { registerLoginIPCHandlers };
 function registerLoginIPCHandlers() {
-  handleAddLoginData();
+  handleLoginData();
   handleGetAllLoginData()
 }
 
 // Main function to handle adding login data
-function handleAddLoginData() {
-  ipcMain.handle('addLoginData', async (event, data) => {
+function handleLoginData() {
+  ipcMain.handle('loginData', async (event, data) => {
     const db = getDb();
 
     try {

@@ -4,7 +4,7 @@ const { contextBridge, ipcRenderer } = require('electron');
 contextBridge.exposeInMainWorld('electron', {
  
   // Login Table
-  addLoginData: (data) => ipcRenderer.invoke('addLoginData', data),
+  loginData: (data) => ipcRenderer.invoke('loginData', data),
   getAllLoginData: (pin) => ipcRenderer.invoke('getAllLoginData', { pin }),
  
   // Owners Table
