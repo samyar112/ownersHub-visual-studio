@@ -39,10 +39,6 @@ export class NewUserComponent {
     const componentInstance = dialogRef.componentInstance as LoginCardComponent;
     if (componentInstance) {
       componentInstance.loginInfo.subscribe(async (loginData: any) => {
-        if (mode === 'forgotPin') {
-
-
-        }
         await this.generateUniquePin();
         this.username = loginData.username;
         const allData = {
@@ -50,12 +46,23 @@ export class NewUserComponent {
           password: loginData.password,
           pin: this.pin
         };
-        try {
-          await this.loginDataService.loginData(allData);
-          dialogRef.close();
-          this.openPinDialogBox()  
-        } catch (error) {
-          console.error('Login Upload Failed:', error)
+        await this.loginDataService.loginParameters(allData);
+        if (mode === 'forgotPin') {
+          try {
+            await this.loginDataService.loginUpdate(allData);
+            dialogRef.close();
+            this.openPinDialogBox()
+          } catch (error) {
+            console.error('Login Update Failed:', error)
+          }
+        } else {
+          try {
+            await this.loginDataService.loginData(allData);
+            dialogRef.close();
+            this.openPinDialogBox()
+          } catch (error) {
+            console.error('Login Upload Failed:', error)
+          }
         }
       });
     }
@@ -64,7 +71,7 @@ export class NewUserComponent {
   openPinDialogBox() {
     this.dialog.open(DialogBoxComponent, {
       data: {
-        title: 'Registration Successful!',
+        title:  'Successfully Done!',
         description: `Username: ${this.username}`,
         content: `Pin: ${this.pin}`,
         footer: 'Save this PIN for future use. It will be necessary to access the tool on this machine.',

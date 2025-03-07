@@ -7,7 +7,9 @@ const saltRounds = 10;
 module.exports = { registerLoginIPCHandlers };
 function registerLoginIPCHandlers() {
   handleLoginData();
-  handleGetAllLoginData()
+  handleLoginParameters();
+  handleLoginUpdate();
+  handleGetAllLoginData();
 }
 
 // Main function to handle adding login data
@@ -16,8 +18,8 @@ function handleLoginData() {
     const db = getDb();
 
     try {
-      await insertLoginParameters(db, data);
       const result = await activateLoginTrigger(db);
+      console.log("And the result is:", result);
       return result;
     } catch (error) {
       console.error("Error processing login data:", error.message);
@@ -28,38 +30,68 @@ function handleLoginData() {
   });
 }
 
-// Function to insert login parameters
-async function insertLoginParameters(db, data) {
-  return new Promise(async (resolve, reject) => {
-    try {
-      if (!data || !data.username || !data.password || !data.pin) {
-        throw new Error("Missing required parameters: username, password, or pin");
-      }
+function handleLoginParameters() {
+  ipcMain.handle('loginParameters', async (event, data) => {
+    const db = getDb();
 
+    try {
       // Hash password and pin before storing
       const hashedPassword = await bcrypt.hash(data.password, saltRounds);
       const hashedPin = await bcrypt.hash(data.pin, saltRounds);
 
-      // Insert new parameters into _tblProcessParameter
-      const query = `INSERT INTO _tblProcessParameters (username, password, pin) VALUES 
-                          ( ?, ?, ?)`;
+      // Insert new parameters into _tblProcessParameters
+      const query = `INSERT OR REPLACE INTO _tblProcessParameters (id, username, password, pin) VALUES (1, ?, ?, ?)`;
 
-      db.run(query, [data.username, hashedPassword, hashedPin], (err) => {
-        if (err) {
-          reject(new Error("Error inserting parameters: " + err.message));
-        } else {
-          resolve();
-        }
+      return new Promise((resolve, reject) => {
+        db.run(query, [data.username, hashedPassword, hashedPin], function (err) {
+          if (err) {
+            reject(new Error("Error inserting parameters: " + err.message));
+          } else {
+            resolve({ success: true, id: this.lastID });
+          }
+        });
       });
     } catch (error) {
-      reject(error);
+      throw new Error("Error processing login parameters: " + error.message);
     }
   });
 }
+
 // Function to activate the trigger
 async function activateLoginTrigger(db) {
   return new Promise((resolve, reject) => {
-    const query = "UPDATE _tblProcessEvent SET Login_Insert = 1 WHERE id = 1";
+    const query = "UPDATE _tblProcessEvent SET Login_Insert = 1";
+
+    db.run(query, (err) => {
+      if (err) {
+        reject(new Error("Error updating trigger flag: " + err.message));
+      } else {
+        resolve(
+          console.log("Trigger Activated"),
+          { message: "User login insertion triggered successfully." });
+      }
+    });
+  });
+}
+
+function handleLoginUpdate() {
+  ipcMain.handle('loginUpdate', async (event, data) => {
+    const db = getDb();
+    try {
+      const result = await activateUpdateTrigger(db);
+      return result;
+    } catch (error) {
+      console.error("Error processing login data:", error.message);
+      return { error: error.message };
+    } finally {
+      db.close();
+    }
+  });
+}
+
+async function activateUpdateTrigger(db) {
+  return new Promise((resolve, reject) => {
+    const query = "UPDATE _tblProcessEvent SET Login_Update = 1";
 
     db.run(query, (err) => {
       if (err) {

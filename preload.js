@@ -5,6 +5,8 @@ contextBridge.exposeInMainWorld('electron', {
  
   // Login Table
   loginData: (data) => ipcRenderer.invoke('loginData', data),
+  loginUpdate: (data) => ipcRenderer.invoke('loginUpdate', data),
+  loginParameters: (data) => ipcRenderer.invoke('loginParameters', data),
   getAllLoginData: (pin) => ipcRenderer.invoke('getAllLoginData', { pin }),
  
   // Owners Table
